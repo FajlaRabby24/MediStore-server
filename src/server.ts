@@ -1,6 +1,7 @@
-const port = 5000;
-
 import app from "./app";
+import { config } from "./config";
+
+const port = config.port;
 
 const main = async () => {
   try {

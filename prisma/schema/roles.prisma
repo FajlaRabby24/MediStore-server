@@ -1,0 +1,12 @@
+enum RolesName {
+    CUSTOMER
+    SELLER
+    ADMIN
+}
+
+model Role {
+    id   String    @id @default(uuid())
+    role RolesName @default(CUSTOMER)
+
+    @@map("roles")
+}
