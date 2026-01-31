@@ -32,8 +32,8 @@ model User {
     email         String
     emailVerified Boolean  @default(false)
     image         String?
-    created_at    DateTime @default(now())
-    updated_at    DateTime @updatedAt
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
 
     role RolesName @default(USER)
 
@@ -49,15 +49,15 @@ model User {
 }
 
 model Session {
-    id         String   @id
-    expiresAt  DateTime
-    token      String
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
-    ipAddress  String?
-    userAgent  String?
-    userId     String
-    user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    id        String   @id
+    expiresAt DateTime
+    token     String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    ipAddress String?
+    userAgent String?
+    userId    String
+    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
     @@unique([token])
     @@index([userId])
@@ -77,8 +77,8 @@ model Account {
     refreshTokenExpiresAt DateTime?
     scope                 String?
     password              String?
-    created_at            DateTime  @default(now())
-    updated_at            DateTime  @updatedAt
+    createdAt             DateTime  @default(now())
+    updatedAt             DateTime  @updatedAt
 
     @@index([userId])
     @@map("account")
@@ -89,8 +89,8 @@ model Verification {
     identifier String
     value      String
     expiresAt  DateTime
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
 
     @@index([identifier])
     @@map("verification")
