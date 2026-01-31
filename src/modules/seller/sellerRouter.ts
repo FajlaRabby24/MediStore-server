@@ -1,8 +1,10 @@
 import { Router } from "express";
+import { UserRoles } from "../../constant";
+import { auth } from "../../middleware/auth";
 import { sellerController } from "./sellerController";
 
 const router = Router();
 
-router.post("/medicines", sellerController.addMedicine);
+router.post("/medicines", auth(UserRoles.SELLER), sellerController.addMedicine);
 
 export const sellerRouter = router;

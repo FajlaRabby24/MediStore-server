@@ -1,10 +1,10 @@
-export const UserRoles = {
-  user: "USER",
-  seller: "SELLER",
-  admin: "ADMIN",
-} as const;
+export enum UserRoles {
+  USER = "USER",
+  SELLER = "SELLER",
+  ADMIN = "ADMIN",
+}
 
-export const UserStatus = {
-  active: "ACTIVE",
-  blocked: "BLOCKED",
-};
+export enum UserStatus {
+  ACTIVE = "ACTIVE",
+  BLOCKED = "BLOCKED",
+}

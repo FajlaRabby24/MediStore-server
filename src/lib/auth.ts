@@ -25,7 +25,7 @@ export const auth = betterAuth({
       role: {
         type: "string",
         required: false,
-        defaultValue: UserRoles.user,
+        defaultValue: UserRoles.USER,
       },
       phone: {
         type: "string",
@@ -34,7 +34,7 @@ export const auth = betterAuth({
       status: {
         type: "string",
         required: false,
-        defaultValue: UserStatus.active,
+        defaultValue: UserStatus.ACTIVE,
       },
     },
   },
