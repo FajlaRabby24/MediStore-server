@@ -32,8 +32,8 @@ model User {
     email         String
     emailVerified Boolean  @default(false)
     image         String?
-    createdAt     DateTime @default(now())
-    updatedAt     DateTime @updatedAt
+    created_at    DateTime @default(now())
+    updated_at    DateTime @updatedAt
 
     role RolesName @default(USER)
 
@@ -41,21 +41,23 @@ model User {
     status   UserStatus @default(ACTIVE)
     sessions Session[]
     accounts Account[]
+    sellers  Seller?
+    orders   Orders[]
 
     @@unique([email])
     @@map("user")
 }
 
 model Session {
-    id        String   @id
-    expiresAt DateTime
-    token     String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    ipAddress String?
-    userAgent String?
-    userId    String
-    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    id         String   @id
+    expiresAt  DateTime
+    token      String
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+    ipAddress  String?
+    userAgent  String?
+    userId     String
+    user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
     @@unique([token])
     @@index([userId])
@@ -75,8 +77,8 @@ model Account {
     refreshTokenExpiresAt DateTime?
     scope                 String?
     password              String?
-    createdAt             DateTime  @default(now())
-    updatedAt             DateTime  @updatedAt
+    created_at            DateTime  @default(now())
+    updated_at            DateTime  @updatedAt
 
     @@index([userId])
     @@map("account")
@@ -87,9 +89,121 @@ model Verification {
     identifier String
     value      String
     expiresAt  DateTime
-    createdAt  DateTime @default(now())
-    updatedAt  DateTime @updatedAt
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
 
     @@index([identifier])
     @@map("verification")
+}
+
+// -------------------------- seller
+model Seller {
+    id String @id @default(ulid())
+
+    user_id String @unique
+    user    User   @relation(fields: [user_id], references: [id])
+
+    shop_name   String     @db.VarChar(100)
+    license_no  String     @unique @db.VarChar(50)
+    address     String     @db.Text
+    is_verified Boolean?   @default(false)
+    created_at  DateTime   @default(now())
+    products    Products[]
+
+    @@index([user_id])
+    @@map("seller")
+}
+
+// ------------------- products
+model Products {
+    id String @id @default(uuid())
+
+    seller_id String
+    seller    Seller @relation(fields: [seller_id], references: [id])
+
+    name        String
+    description String  @db.Text
+    price       Decimal @db.Decimal(10, 2)
+    stock       Int
+    isActive    Boolean @default(true)
+
+    expiry_date DateTime?
+
+    created_at DateTime     @default(now())
+    updated_at DateTime     @updatedAt
+    orderItems OrderItems[]
+
+    @@index([seller_id])
+    @@map("products")
+}
+
+// -------------- orders
+enum OrderStatus {
+    CANCELED
+    PENDING
+    SHIPPED
+    DELIVERED
+}
+
+model Orders {
+    id String @id @default(uuid())
+
+    user_id String
+    user    User   @relation(fields: [user_id], references: [id])
+
+    total_price Decimal      @db.Decimal(10, 2)
+    status      OrderStatus  @default(PENDING)
+    created_at  DateTime     @default(now())
+    orderItems  OrderItems[]
+    payments    Payments[]
+
+    @@index([user_id])
+    @@map("orders")
+}
+
+// -------------- orders items
+model OrderItems {
+    id String @id @default(uuid())
+
+    order_id String
+    order    Orders @relation(fields: [order_id], references: [id])
+
+    product_id String
+    product    Products @relation(fields: [product_id], references: [id])
+
+    quantity Int     @default(1)
+    price    Decimal @db.Decimal(10, 2)
+
+    @@index([order_id, product_id])
+    @@map("order-items")
+}
+
+// ------------- payments
+enum PaymentMethods {
+    COD
+    CARD
+    BKASH
+    NAGAD
+    OTHERS
+}
+
+enum PaymentStatus {
+    PENDING
+    PAID
+    FAILED
+}
+
+model Payments {
+    id String @id @default(uuid())
+
+    order_id String
+    order    Orders @relation(fields: [order_id], references: [id])
+
+    method  PaymentMethods
+    amount  Decimal        @db.Decimal(10, 2)
+    status  PaymentStatus  @default(PENDING)
+    paid_at DateTime?
+
+    @@index([order_id])
+    @@map("payments")
 }
