@@ -103,19 +103,19 @@ model Seller {
     user_id String @unique
     user    User   @relation(fields: [user_id], references: [id])
 
-    shop_name   String     @db.VarChar(100)
-    license_no  String     @unique @db.VarChar(50)
-    address     String     @db.Text
-    is_verified Boolean?   @default(false)
-    created_at  DateTime   @default(now())
-    products    Products[]
+    shop_name   String      @db.VarChar(100)
+    license_no  String      @unique @db.VarChar(50)
+    address     String      @db.Text
+    is_verified Boolean?    @default(false)
+    created_at  DateTime    @default(now())
+    medicines   Medicines[]
 
     @@index([user_id])
     @@map("seller")
 }
 
 // ------------------- products
-model Products {
+model Medicines {
     id String @id @default(uuid())
 
     seller_id String
@@ -134,7 +134,7 @@ model Products {
     orderItems OrderItems[]
 
     @@index([seller_id])
-    @@map("products")
+    @@map("medicines")
 }
 
 // -------------- orders
@@ -169,7 +169,7 @@ model OrderItems {
     order    Orders @relation(fields: [order_id], references: [id])
 
     product_id String
-    product    Products @relation(fields: [product_id], references: [id])
+    medicine   Medicines @relation(fields: [product_id], references: [id])
 
     quantity Int     @default(1)
     price    Decimal @db.Decimal(10, 2)

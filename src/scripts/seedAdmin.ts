@@ -1,7 +1,6 @@
 import axios from "axios";
 import { config } from "../config";
 import { prisma } from "../lib/prisma";
-import { sendResponse } from "../utils/sendResponse";
 
 const seedAdmin = async () => {
   try {
@@ -35,23 +34,21 @@ const seedAdmin = async () => {
         },
       },
     );
-
-    console.log(res?.data);
   } catch (error) {
-    console.log(error);
     const errorMessage =
       error instanceof Error ? error.message : "Something went wrong!";
-    sendResponse(400, false, errorMessage);
+    throw new Error(errorMessage);
   }
 };
 
 seedAdmin()
   .then(async () => {
+    console.log("Seeding finished");
     await prisma.$disconnect();
     process.exit(0);
   })
   .catch(async (err) => {
-    console.error(err);
     await prisma.$disconnect();
+    console.error("Seeding failed:", err);
     process.exit(1);
   });
