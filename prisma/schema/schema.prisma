@@ -27,7 +27,7 @@ enum UserStatus {
 }
 
 model User {
-    id            String   @id @default(uuid())
+    id            String   @id
     name          String
     email         String
     emailVerified Boolean  @default(false)

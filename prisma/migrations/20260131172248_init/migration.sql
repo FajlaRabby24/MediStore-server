@@ -1,21 +1,9 @@
-/*
-  Warnings:
+-- CreateEnum
+CREATE TYPE "RolesName" AS ENUM ('USER', 'SELLER', 'ADMIN');
 
-  - You are about to drop the column `createdAt` on the `account` table. All the data in the column will be lost.
-  - You are about to drop the column `updatedAt` on the `account` table. All the data in the column will be lost.
-  - You are about to drop the column `createdAt` on the `session` table. All the data in the column will be lost.
-  - You are about to drop the column `updatedAt` on the `session` table. All the data in the column will be lost.
-  - You are about to drop the column `createdAt` on the `user` table. All the data in the column will be lost.
-  - You are about to drop the column `updatedAt` on the `user` table. All the data in the column will be lost.
-  - You are about to drop the column `createdAt` on the `verification` table. All the data in the column will be lost.
-  - You are about to drop the column `updatedAt` on the `verification` table. All the data in the column will be lost.
-  - You are about to drop the `Seller` table. If the table is not empty, all the data it contains will be lost.
-  - Added the required column `updated_at` to the `account` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `updated_at` to the `session` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `updated_at` to the `user` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `updated_at` to the `verification` table without a default value. This is not possible if the table is not empty.
+-- CreateEnum
+CREATE TYPE "UserStatus" AS ENUM ('ACTIVE', 'BLOCKED');
 
-*/
 -- CreateEnum
 CREATE TYPE "OrderStatus" AS ENUM ('CANCELED', 'PENDING', 'SHIPPED', 'DELIVERED');
 
@@ -25,35 +13,66 @@ CREATE TYPE "PaymentMethods" AS ENUM ('COD', 'CARD', 'BKASH', 'NAGAD', 'OTHERS')
 -- CreateEnum
 CREATE TYPE "PaymentStatus" AS ENUM ('PENDING', 'PAID', 'FAILED');
 
--- DropForeignKey
-ALTER TABLE "Seller" DROP CONSTRAINT "Seller_user_id_fkey";
+-- CreateTable
+CREATE TABLE "user" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "emailVerified" BOOLEAN NOT NULL DEFAULT false,
+    "image" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "role" "RolesName" NOT NULL DEFAULT 'USER',
+    "phone" TEXT,
+    "status" "UserStatus" NOT NULL DEFAULT 'ACTIVE',
 
--- AlterTable
-ALTER TABLE "account" DROP COLUMN "createdAt",
-DROP COLUMN "updatedAt",
-ADD COLUMN     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-ADD COLUMN     "updated_at" TIMESTAMP(3) NOT NULL;
+    CONSTRAINT "user_pkey" PRIMARY KEY ("id")
+);
 
--- AlterTable
-ALTER TABLE "session" DROP COLUMN "createdAt",
-DROP COLUMN "updatedAt",
-ADD COLUMN     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-ADD COLUMN     "updated_at" TIMESTAMP(3) NOT NULL;
+-- CreateTable
+CREATE TABLE "session" (
+    "id" TEXT NOT NULL,
+    "expiresAt" TIMESTAMP(3) NOT NULL,
+    "token" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "ipAddress" TEXT,
+    "userAgent" TEXT,
+    "userId" TEXT NOT NULL,
 
--- AlterTable
-ALTER TABLE "user" DROP COLUMN "createdAt",
-DROP COLUMN "updatedAt",
-ADD COLUMN     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-ADD COLUMN     "updated_at" TIMESTAMP(3) NOT NULL;
+    CONSTRAINT "session_pkey" PRIMARY KEY ("id")
+);
 
--- AlterTable
-ALTER TABLE "verification" DROP COLUMN "createdAt",
-DROP COLUMN "updatedAt",
-ADD COLUMN     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-ADD COLUMN     "updated_at" TIMESTAMP(3) NOT NULL;
+-- CreateTable
+CREATE TABLE "account" (
+    "id" TEXT NOT NULL,
+    "accountId" TEXT NOT NULL,
+    "providerId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "accessToken" TEXT,
+    "refreshToken" TEXT,
+    "idToken" TEXT,
+    "accessTokenExpiresAt" TIMESTAMP(3),
+    "refreshTokenExpiresAt" TIMESTAMP(3),
+    "scope" TEXT,
+    "password" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
--- DropTable
-DROP TABLE "Seller";
+    CONSTRAINT "account_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "verification" (
+    "id" TEXT NOT NULL,
+    "identifier" TEXT NOT NULL,
+    "value" TEXT NOT NULL,
+    "expiresAt" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "verification_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateTable
 CREATE TABLE "seller" (
@@ -119,6 +138,21 @@ CREATE TABLE "payments" (
 );
 
 -- CreateIndex
+CREATE UNIQUE INDEX "user_email_key" ON "user"("email");
+
+-- CreateIndex
+CREATE INDEX "session_userId_idx" ON "session"("userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "session_token_key" ON "session"("token");
+
+-- CreateIndex
+CREATE INDEX "account_userId_idx" ON "account"("userId");
+
+-- CreateIndex
+CREATE INDEX "verification_identifier_idx" ON "verification"("identifier");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "seller_user_id_key" ON "seller"("user_id");
 
 -- CreateIndex
@@ -138,6 +172,12 @@ CREATE INDEX "order-items_order_id_product_id_idx" ON "order-items"("order_id", 
 
 -- CreateIndex
 CREATE INDEX "payments_order_id_idx" ON "payments"("order_id");
+
+-- AddForeignKey
+ALTER TABLE "session" ADD CONSTRAINT "session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "account" ADD CONSTRAINT "account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "seller" ADD CONSTRAINT "seller_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
