@@ -43,6 +43,7 @@ model User {
     accounts Account[]
     sellers  Seller?
     orders   Orders[]
+    carts    Cart[]
 
     @@unique([email])
     @@map("user")
@@ -132,6 +133,7 @@ model Medicines {
     created_at DateTime     @default(now())
     updated_at DateTime     @updatedAt
     orderItems OrderItems[]
+    carts      Cart[]
 
     @@index([seller_id])
     @@map("medicines")
@@ -206,4 +208,22 @@ model Payments {
 
     @@index([order_id])
     @@map("payments")
+}
+
+// _------------------------ cart
+model Cart {
+    id String @id @default(uuid())
+
+    user_id String
+    user    User   @relation(fields: [user_id], references: [id])
+
+    product_id String
+    product    Medicines @relation(fields: [product_id], references: [id])
+
+    quantity   Int      @default(1)
+    price      Decimal  @db.Decimal(10, 2)
+    created_at DateTime @default(now())
+
+    @@unique([user_id, product_id])
+    @@map("cart")
 }
