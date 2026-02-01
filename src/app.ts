@@ -4,6 +4,7 @@ import express, { Request, Response } from "express";
 import { config } from "./config";
 import { auth } from "./lib/auth";
 import { errorHandler } from "./middleware/errorHandler";
+import { notFound } from "./middleware/notFound";
 import { sellerRouter } from "./modules/seller/sellerRouter";
 
 const app = express();
@@ -28,6 +29,7 @@ app.use("/", (req: Request, res: Response) => {
   });
 });
 
+app.use(notFound);
 app.use(errorHandler);
 
 export default app;
