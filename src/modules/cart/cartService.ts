@@ -16,6 +16,28 @@ const addToCart = async (
   return result;
 };
 
+// update quantity
+// TODO: quantity must be positive check in client side
+const updateQuantity = async (medicineId: string, value: number) => {
+  const result = await prisma.cart.update({
+    where: {
+      id: medicineId,
+    },
+    data: {
+      quantity: {
+        increment: value,
+      },
+    },
+    select: {
+      id: true,
+      quantity: true,
+    },
+  });
+
+  return result;
+};
+
 export const cartService = {
   addToCart,
+  updateQuantity,
 };

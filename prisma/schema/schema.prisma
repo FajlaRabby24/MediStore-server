@@ -175,13 +175,13 @@ model OrderItems {
     seller_id String
     seller    Seller @relation(fields: [seller_id], references: [id])
 
-    product_id String
-    medicine   Medicines @relation(fields: [product_id], references: [id])
+    medicine_id String
+    medicine    Medicines @relation(fields: [medicine_id], references: [id])
 
     quantity Int     @default(1)
     price    Decimal @db.Decimal(10, 2)
 
-    @@index([order_id, product_id])
+    @@index([order_id, medicine_id])
     @@map("order-items")
 }
 
@@ -225,13 +225,13 @@ model Cart {
     seller_id String
     seller    Seller @relation(fields: [seller_id], references: [id])
 
-    product_id String
-    product    Medicines @relation(fields: [product_id], references: [id])
+    medicine_id String
+    product     Medicines @relation(fields: [medicine_id], references: [id])
 
     quantity   Int      @default(1)
     price      Decimal  @db.Decimal(10, 2)
     created_at DateTime @default(now())
 
-    @@unique([user_id, product_id])
+    @@unique([user_id, medicine_id])
     @@map("cart")
 }
