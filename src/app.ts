@@ -3,6 +3,7 @@ import cors from "cors";
 import express, { Request, Response } from "express";
 import { config } from "./config";
 import { auth } from "./lib/auth";
+import { errorHandler } from "./middleware/errorHandler";
 import { sellerRouter } from "./modules/seller/sellerRouter";
 
 const app = express();
@@ -26,5 +27,7 @@ app.use("/", (req: Request, res: Response) => {
     message: "This is root route.",
   });
 });
+
+app.use(errorHandler);
 
 export default app;
