@@ -83,8 +83,34 @@ const deleteMedicine = async (
   }
 };
 
+// TODO: GET seller's order
+const getSellerOrders = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+  } catch (error) {
+    next(error);
+  }
+};
+
+// TODO: PATCH update order staus
+const updateOrderStatus = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const sellerController = {
   addMedicine,
   updateMedicine,
   deleteMedicine,
+  getSellerOrders,
+  updateOrderStatus,
 };

@@ -5,6 +5,8 @@ import { sellerController } from "./sellerController";
 
 const router = Router();
 
+router.get("/orders", auth(UserRoles.SELLER), sellerController.getSellerOrders);
+
 router.post("/medicines", auth(UserRoles.SELLER), sellerController.addMedicine);
 
 router.put(
@@ -17,6 +19,12 @@ router.delete(
   "/medicines/:medicineId",
   auth(UserRoles.SELLER),
   sellerController.deleteMedicine,
+);
+
+router.patch(
+  "/orders/:orderId",
+  auth(UserRoles.SELLER),
+  sellerController.updateOrderStatus,
 );
 
 export const sellerRouter = router;
