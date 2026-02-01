@@ -16,6 +16,18 @@ const addMedicine = async (
   return result;
 };
 
+// find seller by user id
+const findSellerByUserId = async (userId: string) => {
+  const result = await prisma.seller.findUnique({
+    where: {
+      user_id: userId,
+    },
+  });
+
+  return result;
+};
+
 export const sellerService = {
   addMedicine,
+  findSellerByUserId,
 };

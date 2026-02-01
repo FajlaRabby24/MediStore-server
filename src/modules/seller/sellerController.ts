@@ -5,8 +5,17 @@ import { sellerService } from "./sellerService";
 // add new medicine => seller
 const addMedicine = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const sellerId = "asdfasdf13213lksdjfls";
-    const result = await sellerService.addMedicine(req.body, sellerId);
+    const user = req.user;
+    if (!user) {
+      return sendResponse(res, 400, false, "User not found!");
+    }
+
+    const seller = await sellerService.findSellerByUserId(user?.id);
+    if (!seller) {
+      return sendResponse(res, 400, false, "Seller id is required!");
+    }
+
+    const result = await sellerService.addMedicine(req.body, seller?.id);
 
     return sendResponse(res, 201, true, "Medicine added successfully.", result);
   } catch (error) {
