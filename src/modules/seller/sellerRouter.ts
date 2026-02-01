@@ -7,4 +7,10 @@ const router = Router();
 
 router.post("/medicines", auth(UserRoles.SELLER), sellerController.addMedicine);
 
+router.put(
+  "/medicines/:medicineId",
+  auth(UserRoles.SELLER),
+  sellerController.updateMedicine,
+);
+
 export const sellerRouter = router;

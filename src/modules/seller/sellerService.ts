@@ -27,7 +27,30 @@ const findSellerByUserId = async (userId: string) => {
   return result;
 };
 
+// update medicine by id => seller
+const updateMedicine = async (medicindId: string, data: Medicines) => {
+  const medicine = await prisma.medicines.findUnique({
+    where: {
+      id: medicindId,
+    },
+  });
+
+  if (!medicine) {
+    throw new Error("No medicine was found!");
+  }
+
+  const result = await prisma.medicines.update({
+    where: {
+      id: medicindId,
+    },
+    data,
+  });
+
+  return result;
+};
+
 export const sellerService = {
   addMedicine,
   findSellerByUserId,
+  updateMedicine,
 };
