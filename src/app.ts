@@ -1,6 +1,8 @@
 import { toNodeHandler } from "better-auth/node";
 import cors from "cors";
 import express, { Request, Response } from "express";
+import { rateLimit } from "express-rate-limit";
+import helmet from "helmet";
 import { config } from "./config";
 import { auth } from "./lib/auth";
 import { errorHandler } from "./middleware/errorHandler";
@@ -9,8 +11,18 @@ import { sellerRouter } from "./modules/seller/sellerRouter";
 
 const app = express();
 
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 100,
+  standardHeaders: "draft-8",
+  legacyHeaders: false,
+  ipv6Subnet: 56,
+});
+
 // middleware
 app.use(express.json());
+app.use(limiter);
+app.use(helmet());
 app.use(
   cors({
     origin: config.app_url,
