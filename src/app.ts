@@ -4,10 +4,12 @@ import express, { Request, Response } from "express";
 import { rateLimit } from "express-rate-limit";
 import helmet from "helmet";
 import { config } from "./config";
+import { UserRoles } from "./constant";
 import { auth } from "./lib/auth";
+import { auth as authMiddleware } from "./middleware/auth";
 import { errorHandler } from "./middleware/errorHandler";
 import { notFound } from "./middleware/notFound";
-import { cartRouter } from "./modules/cart/cartRouter";
+import { cartRouter } from "./modules/customer/customerRouter";
 import { sellerRouter } from "./modules/seller/sellerRouter";
 
 const app = express();
@@ -33,8 +35,8 @@ app.use(
 
 app.all("/api/auth/*spalte", toNodeHandler(auth));
 
-app.use("/api/seller", sellerRouter);
-app.use("/api/cart", cartRouter);
+app.use("/api/seller", authMiddleware(UserRoles.SELLER), sellerRouter);
+app.use("/api/user", authMiddleware(UserRoles.USER), cartRouter);
 
 app.use("/", (req: Request, res: Response) => {
   res.status(200).json({

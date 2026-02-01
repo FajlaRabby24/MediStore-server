@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { sendResponse } from "../../utils/sendResponse";
-import { cartService } from "./cartService";
+import { cartService } from "./customerService";
 
 // get all cart of current user/customer
 const getAllCartOfCurrentUser = async (
