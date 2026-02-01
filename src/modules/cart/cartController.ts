@@ -36,7 +36,7 @@ const updateQuantity = async (
     );
     return sendResponse(
       res,
-      201,
+      200,
       false,
       "Quantity updated successfully",
       result,
@@ -45,7 +45,30 @@ const updateQuantity = async (
     next(error);
   }
 };
+
+// delete cart item => user/ customer
+const deleteCartItem = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { medicineId } = req.params;
+    if (!medicineId) {
+      return sendResponse(res, 401, false, "Medicine id is required!");
+    }
+
+    const result = await cartService.deleteCartItem(medicineId as string);
+    return sendResponse(res, 200, false, "Item deleted successfully", result);
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Something went wrong!";
+    next(errorMessage);
+  }
+};
+
 export const cartController = {
   addToCart,
   updateQuantity,
+  deleteCartItem,
 };

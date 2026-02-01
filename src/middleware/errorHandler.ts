@@ -9,8 +9,7 @@ export const errorHandler = (
   next: NextFunction,
 ) => {
   let statusCode = 500;
-  let errorMessage = "Internel Server Error";
-  let errorDetails = err;
+  let errorMessage = err || "Internel Server Error";
 
   // PrismaClientValidationError
   if (err instanceof Prisma.PrismaClientValidationError) {
@@ -50,5 +49,5 @@ export const errorHandler = (
     }
   }
 
-  return sendResponse(res, statusCode, false, errorMessage, errorDetails);
+  return sendResponse(res, statusCode, false, errorMessage);
 };

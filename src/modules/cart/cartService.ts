@@ -47,7 +47,32 @@ const updateQuantity = async (medicineId: string, value: number) => {
   return result;
 };
 
+// delete cart item => user/ customer
+const deleteCartItem = async (medicineId: string) => {
+  const medicine = await prisma.cart.findUnique({
+    where: {
+      id: medicineId,
+    },
+  });
+
+  if (!medicine) {
+    throw new Error("Medicine not found!");
+  }
+
+  const result = await prisma.cart.delete({
+    where: {
+      id: medicineId,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  return result;
+};
+
 export const cartService = {
   addToCart,
   updateQuantity,
+  deleteCartItem,
 };
