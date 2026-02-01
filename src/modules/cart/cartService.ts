@@ -71,8 +71,22 @@ const deleteCartItem = async (medicineId: string) => {
   return result;
 };
 
+// delete all items in cart by array of id => user/customer
+const deleteCartItemAll = async (medicineIds: string[]) => {
+  const result = await prisma.cart.deleteMany({
+    where: {
+      id: {
+        in: medicineIds,
+      },
+    },
+  });
+
+  return result;
+};
+
 export const cartService = {
   addToCart,
   updateQuantity,
   deleteCartItem,
+  deleteCartItemAll,
 };

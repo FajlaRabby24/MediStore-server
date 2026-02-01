@@ -15,6 +15,9 @@ router.patch(
   cartController.updateQuantity,
 );
 
+// delete all items in cart by array of id => user/customer
+router.delete("/", auth(UserRoles.USER), cartController.deleteCartItemAll);
+
 // delete cart item => user/ customer
 router.delete(
   "/:medicineId",

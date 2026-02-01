@@ -13,6 +13,8 @@ const addToCart = async (req: Request, res: Response, next: NextFunction) => {
     const result = await cartService.addToCart(req.body, user.id as string);
     return sendResponse(res, 201, false, "Added to cart successfully", result);
   } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Something went wrong!";
     next(error);
   }
 };
@@ -42,6 +44,8 @@ const updateQuantity = async (
       result,
     );
   } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Something went wrong!";
     next(error);
   }
 };
@@ -67,8 +71,32 @@ const deleteCartItem = async (
   }
 };
 
+// delete all items in cart by array of id => user/customer
+const deleteCartItemAll = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const medicineIds = req.body?.medicine_ids;
+    console.log(medicineIds);
+    if (medicineIds.length < 1) {
+      return sendResponse(res, 401, false, "Medicine ids not provided yet.", {
+        count: 0,
+      });
+    }
+    const result = await cartService.deleteCartItemAll(medicineIds);
+    return sendResponse(res, 200, false, "Items deleted successfully", result);
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Something went wrong!";
+    next(errorMessage);
+  }
+};
+
 export const cartController = {
   addToCart,
   updateQuantity,
   deleteCartItem,
+  deleteCartItemAll,
 };
