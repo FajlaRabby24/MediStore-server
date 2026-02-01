@@ -7,6 +7,7 @@ import { config } from "./config";
 import { auth } from "./lib/auth";
 import { errorHandler } from "./middleware/errorHandler";
 import { notFound } from "./middleware/notFound";
+import { cartRouter } from "./modules/cart/cartRouter";
 import { sellerRouter } from "./modules/seller/sellerRouter";
 
 const app = express();
@@ -33,6 +34,7 @@ app.use(
 app.all("/api/auth/*spalte", toNodeHandler(auth));
 
 app.use("/api/seller", sellerRouter);
+app.use("/api/cart", cartRouter);
 
 app.use("/", (req: Request, res: Response) => {
   res.status(200).json({

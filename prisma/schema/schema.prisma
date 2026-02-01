@@ -104,12 +104,14 @@ model Seller {
     user_id String @unique
     user    User   @relation(fields: [user_id], references: [id])
 
-    shop_name   String      @db.VarChar(100)
-    license_no  String      @unique @db.VarChar(50)
-    address     String      @db.Text
-    is_verified Boolean?    @default(false)
-    created_at  DateTime    @default(now())
+    shop_name   String       @db.VarChar(100)
+    license_no  String       @unique @db.VarChar(50)
+    address     String       @db.Text
+    is_verified Boolean?     @default(false)
+    created_at  DateTime     @default(now())
     medicines   Medicines[]
+    carts       Cart[]
+    orderItems  OrderItems[]
 
     @@index([user_id])
     @@map("seller")
@@ -170,6 +172,9 @@ model OrderItems {
     order_id String
     order    Orders @relation(fields: [order_id], references: [id])
 
+    seller_id String
+    seller    Seller @relation(fields: [seller_id], references: [id])
+
     product_id String
     medicine   Medicines @relation(fields: [product_id], references: [id])
 
@@ -216,6 +221,9 @@ model Cart {
 
     user_id String
     user    User   @relation(fields: [user_id], references: [id])
+
+    seller_id String
+    seller    Seller @relation(fields: [seller_id], references: [id])
 
     product_id String
     product    Medicines @relation(fields: [product_id], references: [id])
