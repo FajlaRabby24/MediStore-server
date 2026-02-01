@@ -29,7 +29,6 @@ const addMedicine = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 // update medicine by id => seller
-
 const updateMedicine = async (
   req: Request,
   res: Response,
@@ -48,9 +47,35 @@ const updateMedicine = async (
 
     return sendResponse(
       res,
-      201,
+      200,
       true,
       "Medicine updated successfully.",
+      result,
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
+// delete medicine by id => seller
+const deleteMedicine = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { medicineId } = req.params;
+    if (!medicineId) {
+      return sendResponse(res, 401, false, "Medicine id is missing!");
+    }
+
+    const result = await sellerService.deleteMedicine(medicineId as string);
+
+    return sendResponse(
+      res,
+      200,
+      true,
+      "Medicine deleted successfully.",
       result,
     );
   } catch (error) {
@@ -61,4 +86,5 @@ const updateMedicine = async (
 export const sellerController = {
   addMedicine,
   updateMedicine,
+  deleteMedicine,
 };

@@ -49,8 +49,30 @@ const updateMedicine = async (medicindId: string, data: Medicines) => {
   return result;
 };
 
+// delete medicine by id => seller
+const deleteMedicine = async (medicindId: string) => {
+  const medicine = await prisma.medicines.findUnique({
+    where: {
+      id: medicindId,
+    },
+  });
+
+  if (!medicine) {
+    throw new Error("No medicine was found!");
+  }
+
+  const result = await prisma.medicines.delete({
+    where: {
+      id: medicindId,
+    },
+  });
+
+  return result;
+};
+
 export const sellerService = {
   addMedicine,
   findSellerByUserId,
   updateMedicine,
+  deleteMedicine,
 };
