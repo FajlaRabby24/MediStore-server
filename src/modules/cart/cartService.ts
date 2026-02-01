@@ -19,6 +19,16 @@ const addToCart = async (
 // update quantity
 // TODO: quantity must be positive check in client side
 const updateQuantity = async (medicineId: string, value: number) => {
+  const medicine = await prisma.cart.findUnique({
+    where: {
+      id: medicineId,
+    },
+  });
+
+  if (!medicine) {
+    throw new Error("Medicine not found!");
+  }
+
   const result = await prisma.cart.update({
     where: {
       id: medicineId,
