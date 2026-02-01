@@ -1,6 +1,17 @@
 import { Cart } from "../../../generated/prisma/client";
 import { prisma } from "../../lib/prisma";
 
+// get all cart of current user/customer
+const getAllCartOfCurrentUser = async (userId: string) => {
+  const result = await prisma.cart.findMany({
+    where: {
+      user_id: userId,
+    },
+  });
+
+  return result;
+};
+
 // add to cart => user/customer
 const addToCart = async (
   data: Omit<Cart, "id" | "created_at">,
@@ -89,4 +100,5 @@ export const cartService = {
   updateQuantity,
   deleteCartItem,
   deleteCartItemAll,
+  getAllCartOfCurrentUser,
 };

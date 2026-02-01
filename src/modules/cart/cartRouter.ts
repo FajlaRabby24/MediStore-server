@@ -5,6 +5,9 @@ import { cartController } from "./cartController";
 
 const router = Router();
 
+// get all cart of current user/customer
+router.get("/", auth(UserRoles.USER), cartController.getAllCartOfCurrentUser);
+
 // add to cart
 router.post("/", auth(UserRoles.USER), cartController.addToCart);
 

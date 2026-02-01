@@ -13,7 +13,6 @@ const main = async () => {
       console.log(`🚀 Server is running on port ${port}`);
     });
   } catch (error) {
-    console.error("An error occured", error);
     await prisma.$disconnect();
     process.exit(1);
   }

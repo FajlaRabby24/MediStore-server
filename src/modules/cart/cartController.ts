@@ -2,6 +2,27 @@ import { NextFunction, Request, Response } from "express";
 import { sendResponse } from "../../utils/sendResponse";
 import { cartService } from "./cartService";
 
+// get all cart of current user/customer
+const getAllCartOfCurrentUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const user = req.user;
+    if (!user) {
+      return sendResponse(res, 401, false, "Unauthorized user!");
+    }
+
+    const result = await cartService.getAllCartOfCurrentUser(user.id as string);
+    return sendResponse(res, 200, true, "Cart retrived successfully.", result);
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Something went wrong!";
+    next(errorMessage);
+  }
+};
+
 // create new order => user/customer
 const addToCart = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -11,11 +32,11 @@ const addToCart = async (req: Request, res: Response, next: NextFunction) => {
     }
 
     const result = await cartService.addToCart(req.body, user.id as string);
-    return sendResponse(res, 201, false, "Added to cart successfully", result);
+    return sendResponse(res, 201, true, "Added to cart successfully", result);
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : "Something went wrong!";
-    next(error);
+    next(errorMessage);
   }
 };
 
@@ -46,7 +67,7 @@ const updateQuantity = async (
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : "Something went wrong!";
-    next(error);
+    next(errorMessage);
   }
 };
 
@@ -99,4 +120,5 @@ export const cartController = {
   updateQuantity,
   deleteCartItem,
   deleteCartItemAll,
+  getAllCartOfCurrentUser,
 };
