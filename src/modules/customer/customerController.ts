@@ -60,7 +60,7 @@ const updateQuantity = async (
     return sendResponse(
       res,
       200,
-      false,
+      true,
       "Quantity updated successfully",
       result,
     );
@@ -84,7 +84,7 @@ const deleteCartItem = async (
     }
 
     const result = await cartService.deleteCartItem(medicineId as string);
-    return sendResponse(res, 200, false, "Item deleted successfully", result);
+    return sendResponse(res, 200, true, "Item deleted successfully", result);
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : "Something went wrong!";
@@ -107,7 +107,7 @@ const deleteCartItemAll = async (
       });
     }
     const result = await cartService.deleteCartItemAll(medicineIds);
-    return sendResponse(res, 200, false, "Items deleted successfully", result);
+    return sendResponse(res, 200, true, "Items deleted successfully", result);
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : "Something went wrong!";
