@@ -6,6 +6,18 @@ const getAllMedicine = async () => {
   return result;
 };
 
+// get spacific medicine for medicine details
+const getMedicineById = async (medicineId: string) => {
+  const result = await prisma.medicines.findUnique({
+    where: {
+      id: medicineId,
+    },
+  });
+
+  return result;
+};
+
 export const publicService = {
   getAllMedicine,
+  getMedicineById,
 };
