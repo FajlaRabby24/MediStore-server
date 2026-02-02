@@ -26,4 +26,4 @@ router.delete(
   cartController.deleteCartItem,
 );
 
-export const cartRouter = router;
+export const userRouter = router;
