@@ -1,4 +1,5 @@
 import { Cart } from "../../../generated/prisma/client";
+import { UserStatus } from "../../constant";
 import { prisma } from "../../lib/prisma";
 
 // get all cart of current user/customer
@@ -12,11 +13,31 @@ const getAllCartOfCurrentUser = async (userId: string) => {
   return result;
 };
 
+// find medicine by id
+const getMedicineById = async (medicineId: string) => {
+  const result = await prisma.medicines.findUnique({
+    where: {
+      id: medicineId,
+    },
+    select: {
+      id: true,
+      stock: true,
+    },
+  });
+
+  return result;
+};
+
 // add to cart => user/customer
 const addToCart = async (
   data: Omit<Cart, "id" | "created_at">,
   userId: string,
 ) => {
+  const medicine = await getMedicineById(data.medicine_id);
+  if (!medicine) {
+    throw new Error("No medcine found of these id.");
+  }
+
   const result = await prisma.cart.create({
     data: {
       ...data,
@@ -27,14 +48,27 @@ const addToCart = async (
   return result;
 };
 
-// update quantity
-// TODO: quantity must be positive check in client side
-const updateQuantity = async (medicineId: string, value: number) => {
-  const medicine = await prisma.cart.findUnique({
+// update medicine stock
+const updateMedicineStock = async (medicineId: string, stock: number) => {
+  const result = await prisma.medicines.update({
     where: {
       id: medicineId,
     },
+    data: {
+      stock: {
+        decrement: stock,
+      },
+    },
+    select: {
+      id: true,
+    },
   });
+};
+
+// update cart item quantity
+// TODO: quantity must be positive check in client side
+const updateQuantity = async (medicineId: string, value: number) => {
+  const medicine = await getMedicineById(medicineId);
 
   if (!medicine) {
     throw new Error("Medicine not found!");
@@ -93,6 +127,25 @@ const deleteCartItemAll = async (medicineIds: string[]) => {
   });
 
   return result;
+};
+
+// checkout
+const checkOut = async (userId: string) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+    select: {
+      status: true,
+    },
+  });
+
+  // check is user active or not
+  if (user?.status === UserStatus.BLOCKED) {
+    throw new Error(
+      `You don't have permission to checkout. Please first your acount is active!`,
+    );
+  }
 };
 
 export const cartService = {

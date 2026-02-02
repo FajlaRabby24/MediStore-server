@@ -10,20 +10,14 @@ router.get("/cart", cartController.getAllCartOfCurrentUser);
 router.post("/cart", cartController.addToCart);
 
 // TODO: quantity must be positive check in client side
-router.patch(
-  "/cart/:medicineId",
-
-  cartController.updateQuantity,
-);
+router.patch("/cart/:medicineId", cartController.updateQuantity);
 
 // delete all items in cart by array of id => user/customer
 router.delete("/cart", cartController.deleteCartItemAll);
 
 // delete cart item => user/ customer
-router.delete(
-  "/cart/:medicineId",
+router.delete("/cart/:medicineId", cartController.deleteCartItem);
 
-  cartController.deleteCartItem,
-);
+// router.
 
 export const userRouter = router;
