@@ -124,6 +124,9 @@ model Medicines {
     seller_id String
     seller    Seller @relation(fields: [seller_id], references: [id])
 
+    category_id String
+    category    MedicineCategory @relation(fields: [category_id], references: [id])
+
     name        String
     description String  @db.Text
     price       Decimal @db.Decimal(10, 2)
@@ -137,7 +140,7 @@ model Medicines {
     orderItems OrderItems[]
     carts      Cart[]
 
-    @@index([seller_id])
+    @@index([seller_id, category_id])
     @@map("medicines")
 }
 
@@ -234,4 +237,17 @@ model Cart {
 
     @@unique([user_id, medicine_id])
     @@map("cart")
+}
+
+// ------------------ medicine category
+model MedicineCategory {
+    id         String      @id @default(uuid())
+    name       String
+    icon       String?
+    isActive   Boolean     @default(true)
+    created_at DateTime    @default(now())
+    medicines  Medicines[]
+
+    @@index([name])
+    @@map("medicine-category")
 }
