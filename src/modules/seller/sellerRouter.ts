@@ -1,19 +1,15 @@
 import { Router } from "express";
+import { sellerMedicineRouter } from "./medicine/sellerMedicineRouter";
+import { sellerOrderRouter } from "./order/sellerOrderRouter";
 import { sellerController } from "./sellerController";
 
 const router = Router();
 
-router.get("/orders", sellerController.getSellerOrders);
-
-router.post("/add-medicines", sellerController.addMedicine);
-
 // make seller profile => seller
 router.post("/make-seller", sellerController.makeSellerProfile);
 
-router.put("/medicines/:medicineId", sellerController.updateMedicine);
+router.use("/medicine", sellerMedicineRouter);
 
-router.delete("/medicines/:medicineId", sellerController.deleteMedicine);
-
-router.patch("/orders/:orderId", sellerController.updateOrderStatus);
+router.use("/orders", sellerOrderRouter);
 
 export const sellerRouter = router;
