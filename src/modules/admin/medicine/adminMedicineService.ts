@@ -1,5 +1,5 @@
-import { MedicineCategory } from "../../../generated/prisma/client";
-import { prisma } from "../../lib/prisma";
+import { MedicineCategory } from "../../../../generated/prisma/client";
+import { prisma } from "../../../lib/prisma";
 
 // add category => admin
 const addCategory = async (
@@ -23,6 +23,6 @@ const addCategory = async (
   return result;
 };
 
-export const adminService = {
+export const adminMedicineService = {
   addCategory,
 };

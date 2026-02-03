@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { adminController } from "./adminController";
+import { adminMedicineRouter } from "./medicine/adminMedicineRouter";
 
 const router = Router();
 
-router.post("/add-category", adminController.addCategory);
+router.use("/medicine", adminMedicineRouter);
 
 export const adminRouter = router;

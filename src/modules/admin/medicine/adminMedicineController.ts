@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import { convertTextToSlug } from "../../utils/convertTextToSlug";
-import { sendResponse } from "../../utils/sendResponse";
-import { adminService } from "./adminService";
+import { convertTextToSlug } from "../../../utils/convertTextToSlug";
+import { sendResponse } from "../../../utils/sendResponse";
+import { adminMedicineService } from "./adminMedicineService";
 
 // add category => admin
 const addCategory = async (req: Request, res: Response, next: NextFunction) => {
@@ -9,7 +9,7 @@ const addCategory = async (req: Request, res: Response, next: NextFunction) => {
     const data = req.body;
     const slug = convertTextToSlug(data.name);
 
-    const result = await adminService.addCategory(data, slug);
+    const result = await adminMedicineService.addCategory(data, slug);
     return sendResponse(res, 201, true, "Category added successfully.", result);
   } catch (error) {
     const errorMessage =
@@ -18,6 +18,6 @@ const addCategory = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export const adminController = {
+export const adminMedicineController = {
   addCategory,
 };
