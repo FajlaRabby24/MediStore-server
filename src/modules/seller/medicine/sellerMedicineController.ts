@@ -2,6 +2,41 @@ import { NextFunction, Request, Response } from "express";
 import { sendResponse } from "../../../utils/sendResponse";
 import { sellerMedicineService } from "./sellerMedicineService";
 
+// get all medicine of current seller
+const getAllMedicineOfCurrentSeller = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const seller = await sellerMedicineService.findSellerByUserId(
+      req?.user?.id as string,
+    );
+    if (!seller) {
+      return sendResponse(
+        res,
+        403,
+        false,
+        "Seller profile not found for this user.",
+      );
+    }
+
+    const result = await sellerMedicineService.getAllMedicineOfCurrentSeller(
+      seller.id,
+    );
+
+    return sendResponse(
+      res,
+      201,
+      true,
+      "Medicines retrived successfully.",
+      result,
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
 // add new medicine => seller
 const addMedicine = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -89,4 +124,5 @@ export const sellerMedicineController = {
   addMedicine,
   updateMedicine,
   deleteMedicine,
+  getAllMedicineOfCurrentSeller,
 };

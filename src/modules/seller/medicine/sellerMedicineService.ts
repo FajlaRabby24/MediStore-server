@@ -1,6 +1,24 @@
 import { Medicines } from "../../../../generated/prisma/client";
 import { prisma } from "../../../lib/prisma";
 
+// get all medicine of current seller
+const getAllMedicineOfCurrentSeller = async (sellerId: string) => {
+  const result = await prisma.medicines.findMany({
+    where: {
+      seller_id: sellerId,
+    },
+    include: {
+      category: {
+        select: {
+          name: true,
+        },
+      },
+    },
+  });
+
+  return result;
+};
+
 // add new medicine => seller
 const addMedicine = async (
   medicine: Omit<Medicines, "id" | "created_at" | "updated_at">,
@@ -85,4 +103,5 @@ export const sellerMedicineService = {
   updateMedicine,
   deleteMedicine,
   findSellerByUserId,
+  getAllMedicineOfCurrentSeller,
 };
