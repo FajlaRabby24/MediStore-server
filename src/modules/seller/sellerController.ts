@@ -2,6 +2,28 @@ import { NextFunction, Request, Response } from "express";
 import { sendResponse } from "../../utils/sendResponse";
 import { sellerService } from "./sellerService";
 
+// make seller profile => seller
+const makeSellerProfile = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    delete req.body?.is_verified;
+    const isVerified = false;
+
+    const result = await sellerService.makeSellerProfile(
+      req.body,
+      isVerified,
+      req.user?.id as string,
+    );
+
+    return sendResponse(res, 201, true, "Seller created successfully.", result);
+  } catch (error) {
+    next(error);
+  }
+};
+
 // add new medicine => seller
 const addMedicine = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -110,4 +132,5 @@ export const sellerController = {
   deleteMedicine,
   getSellerOrders,
   updateOrderStatus,
+  makeSellerProfile,
 };

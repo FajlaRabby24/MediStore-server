@@ -7,6 +7,9 @@ router.get("/orders", sellerController.getSellerOrders);
 
 router.post("/add-medicines", sellerController.addMedicine);
 
+// make seller profile => seller
+router.post("/make-seller", sellerController.makeSellerProfile);
+
 router.put("/medicines/:medicineId", sellerController.updateMedicine);
 
 router.delete("/medicines/:medicineId", sellerController.deleteMedicine);
