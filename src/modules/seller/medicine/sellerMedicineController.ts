@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { paginationSortingHelper } from "../../../helpers/src/helpers/paginationSortingHelper";
 import { sendResponse } from "../../../utils/sendResponse";
 import { sellerMedicineService } from "./sellerMedicineService";
 
@@ -9,6 +10,8 @@ const getAllMedicineOfCurrentSeller = async (
   next: NextFunction,
 ) => {
   try {
+    const { limit, skip, page } = paginationSortingHelper(req.query);
+
     const seller = await sellerMedicineService.findSellerByUserId(
       req?.user?.id as string,
     );
@@ -23,11 +26,14 @@ const getAllMedicineOfCurrentSeller = async (
 
     const result = await sellerMedicineService.getAllMedicineOfCurrentSeller(
       seller.id,
+      limit,
+      skip,
+      page,
     );
 
     return sendResponse(
       res,
-      201,
+      200,
       true,
       "Medicines retrived successfully.",
       result,

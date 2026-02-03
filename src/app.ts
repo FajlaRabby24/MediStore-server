@@ -26,6 +26,7 @@ const limiter = rateLimit({
 
 // middleware
 app.use(express.json());
+app.use(express.urlencoded());
 app.use(limiter);
 app.use(helmet());
 app.use(

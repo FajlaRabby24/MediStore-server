@@ -2,8 +2,15 @@ import { Medicines } from "../../../../generated/prisma/client";
 import { prisma } from "../../../lib/prisma";
 
 // get all medicine of current seller
-const getAllMedicineOfCurrentSeller = async (sellerId: string) => {
+const getAllMedicineOfCurrentSeller = async (
+  sellerId: string,
+  limit: number,
+  skip: number,
+  page: number,
+) => {
   const result = await prisma.medicines.findMany({
+    take: limit,
+    skip,
     where: {
       seller_id: sellerId,
     },
@@ -16,7 +23,21 @@ const getAllMedicineOfCurrentSeller = async (sellerId: string) => {
     },
   });
 
-  return result;
+  const totalMedicine = await prisma.medicines.count({
+    where: {
+      seller_id: sellerId,
+    },
+  });
+
+  return {
+    data: result,
+    pagination: {
+      total: totalMedicine,
+      page,
+      limit,
+      totalPage: Math.ceil(totalMedicine / limit),
+    },
+  };
 };
 
 // add new medicine => seller
