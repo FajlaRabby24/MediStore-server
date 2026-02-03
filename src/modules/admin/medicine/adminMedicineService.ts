@@ -38,10 +38,7 @@ const findCategoryById = async (categoryId: string) => {
 };
 
 /// update  medicine category
-const updateCategory = async (
-  categoryId: string,
-  data: Omit<MedicineCategory, "created_at" | "updated_at">,
-) => {
+const updateCategory = async (categoryId: string, isActive: boolean) => {
   const medicineCategory = await findCategoryById(categoryId);
   if (!medicineCategory) {
     throw new Error("No medicine found for update!");
@@ -51,12 +48,11 @@ const updateCategory = async (
     where: {
       id: categoryId,
     },
-    data,
+    data: {
+      isActive,
+    },
     select: {
       id: true,
-      name: true,
-      slug: true,
-      icon: true,
       isActive: true,
     },
   });

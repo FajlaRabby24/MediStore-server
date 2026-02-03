@@ -25,7 +25,7 @@ const updateCategory = async (
   next: NextFunction,
 ) => {
   try {
-    const data = req.body;
+    const { isActive } = req.body;
     const { categoryId } = req.params;
     if (!categoryId) {
       return sendResponse(res, 401, false, "Required medicine category id.");
@@ -33,7 +33,7 @@ const updateCategory = async (
 
     const result = await adminMedicineService.updateCategory(
       categoryId as string,
-      data,
+      isActive,
     );
     return sendResponse(
       res,
