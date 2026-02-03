@@ -5,12 +5,9 @@ import { sellerService } from "./sellerService";
 // add new medicine => seller
 const addMedicine = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const user = req.user;
-    if (!user) {
-      return sendResponse(res, 401, false, "Unauthorized user!");
-    }
-
-    const seller = await sellerService.findSellerByUserId(user?.id);
+    const seller = await sellerService.findSellerByUserId(
+      req?.user?.id as string,
+    );
     if (!seller) {
       return sendResponse(
         res,

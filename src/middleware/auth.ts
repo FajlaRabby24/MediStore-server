@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { auth as betteAuth } from "../lib/auth";
 import { sendResponse } from "../utils/sendResponse";
-import { UserRoles } from "./../constant/index";
+import { UserRoles, UserStatus } from "./../constant/index";
 
 declare global {
   namespace Express {
@@ -37,6 +37,16 @@ export const auth = (...roles: UserRoles[]) => {
           403,
           false,
           "Email verification requred. Please verify your email!",
+        );
+      }
+
+      // check is user active or not
+      if (session?.user?.status === UserStatus.BLOCKED) {
+        return sendResponse(
+          res,
+          403,
+          false,
+          "Your account is currently inactive. Please contact support.",
         );
       }
 

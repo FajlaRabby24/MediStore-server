@@ -243,9 +243,11 @@ model Cart {
 model MedicineCategory {
     id         String      @id @default(uuid())
     name       String
+    slug       String      @unique
     icon       String?
     isActive   Boolean     @default(true)
     created_at DateTime    @default(now())
+    updated_at DateTime    @updatedAt
     medicines  Medicines[]
 
     @@index([name])

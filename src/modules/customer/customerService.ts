@@ -1,5 +1,4 @@
 import { Cart } from "../../../generated/prisma/client";
-import { UserStatus } from "../../constant";
 import { prisma } from "../../lib/prisma";
 
 // get all cart of current user/customer
@@ -130,23 +129,18 @@ const deleteCartItemAll = async (medicineIds: string[]) => {
 };
 
 // checkout
-const checkOut = async (userId: string) => {
-  const user = await prisma.user.findUnique({
-    where: {
-      id: userId,
-    },
-    select: {
-      status: true,
-    },
-  });
+// const checkOut = async (userId: string) => {
+//   // get cart of current user
+//   const cart = await getAllCartOfCurrentUser(userId);
 
-  // check is user active or not
-  if (user?.status === UserStatus.BLOCKED) {
-    throw new Error(
-      `You don't have permission to checkout. Please first your acount is active!`,
-    );
-  }
-};
+//   if (cart.length < 1) {
+//     throw new Error(
+//       "Your cart is empty. First Add some product on your cart. Thank you!",
+//     );
+//   }
+
+//   // cart.map((cartItem: Cart) => (cartItem.))
+// };
 
 export const cartService = {
   addToCart,

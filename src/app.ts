@@ -9,6 +9,7 @@ import { auth } from "./lib/auth";
 import { auth as authMiddleware } from "./middleware/auth";
 import { errorHandler } from "./middleware/errorHandler";
 import { notFound } from "./middleware/notFound";
+import { adminRouter } from "./modules/admin/adminRouter";
 import { userRouter } from "./modules/customer/customerRouter";
 import { publicRouter } from "./modules/public/publicRotuer";
 import { sellerRouter } from "./modules/seller/sellerRouter";
@@ -39,6 +40,7 @@ app.all("/api/auth/*spalte", toNodeHandler(auth));
 app.use("/api/public", publicRouter);
 app.use("/api/seller", authMiddleware(UserRoles.SELLER), sellerRouter);
 app.use("/api/user", authMiddleware(UserRoles.USER), userRouter);
+app.use("/api/admin", authMiddleware(UserRoles.ADMIN), adminRouter);
 
 app.use("/", (req: Request, res: Response) => {
   res.status(200).json({
