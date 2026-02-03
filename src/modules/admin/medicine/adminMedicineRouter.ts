@@ -3,6 +3,8 @@ import { adminMedicineController } from "./adminMedicineController";
 
 const router = Router();
 
-router.use("/add-category", adminMedicineController.addCategory);
+router.post("/add-category", adminMedicineController.addCategory);
+
+router.put("/:categoryId", adminMedicineController.updateCategory);
 
 export const adminMedicineRouter = router;
