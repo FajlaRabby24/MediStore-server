@@ -38,7 +38,10 @@ const findCategoryById = async (categoryId: string) => {
 };
 
 /// update  medicine category
-const updateCategory = async (categoryId: string, isActive: boolean) => {
+const updateCategoryIsActive = async (
+  categoryId: string,
+  isActive: boolean,
+) => {
   const medicineCategory = await findCategoryById(categoryId);
   if (!medicineCategory) {
     throw new Error("No medicine found for update!");
@@ -62,5 +65,5 @@ const updateCategory = async (categoryId: string, isActive: boolean) => {
 
 export const adminMedicineService = {
   addCategory,
-  updateCategory,
+  updateCategoryIsActive,
 };

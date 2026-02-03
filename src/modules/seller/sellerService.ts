@@ -11,6 +11,16 @@ const addMedicine = async (
       ...medicine,
       seller_id: sellerId,
     },
+    select: {
+      id: true,
+      seller_id: true,
+      category_id: true,
+      description: true,
+      price: true,
+      stock: true,
+      isActive: true,
+      expiry_date: true,
+    },
   });
 
   return result;

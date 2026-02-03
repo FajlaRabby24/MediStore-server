@@ -19,7 +19,7 @@ const addCategory = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 // update category => admin
-const updateCategory = async (
+const updateCategoryIsActive = async (
   req: Request,
   res: Response,
   next: NextFunction,
@@ -31,7 +31,7 @@ const updateCategory = async (
       return sendResponse(res, 401, false, "Required medicine category id.");
     }
 
-    const result = await adminMedicineService.updateCategory(
+    const result = await adminMedicineService.updateCategoryIsActive(
       categoryId as string,
       isActive,
     );
@@ -51,5 +51,5 @@ const updateCategory = async (
 
 export const adminMedicineController = {
   addCategory,
-  updateCategory,
+  updateCategoryIsActive,
 };

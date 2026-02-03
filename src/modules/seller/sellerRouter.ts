@@ -5,7 +5,7 @@ const router = Router();
 
 router.get("/orders", sellerController.getSellerOrders);
 
-router.post("/medicines", sellerController.addMedicine);
+router.post("/add-medicines", sellerController.addMedicine);
 
 router.put("/medicines/:medicineId", sellerController.updateMedicine);
 

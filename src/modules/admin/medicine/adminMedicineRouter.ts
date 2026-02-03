@@ -5,6 +5,6 @@ const router = Router();
 
 router.post("/add-category", adminMedicineController.addCategory);
 
-router.put("/:categoryId", adminMedicineController.updateCategory);
+router.put("/:categoryId", adminMedicineController.updateCategoryIsActive);
 
 export const adminMedicineRouter = router;
