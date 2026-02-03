@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { paginationSortingHelper } from "../../../helpers/src/helpers/paginationSortingHelper";
 import { sendResponse } from "../../../utils/sendResponse";
 import { customerCartService } from "./customerCartService";
 
@@ -9,13 +10,17 @@ const getAllCartOfCurrentUser = async (
   next: NextFunction,
 ) => {
   try {
-    const user = req.user;
-    if (!user) {
-      return sendResponse(res, 401, false, "Unauthorized user!");
-    }
+    const { limit, skip, page, sortBy, sortOrder } = paginationSortingHelper(
+      req.query,
+    );
 
     const result = await customerCartService.getAllCartOfCurrentUser(
-      user.id as string,
+      req?.user?.id as string,
+      limit,
+      skip,
+      page,
+      sortBy,
+      sortOrder,
     );
     return sendResponse(res, 200, true, "Cart retrived successfully.", result);
   } catch (error) {
@@ -55,6 +60,7 @@ const updateQuantity = async (
 
     const result = await customerCartService.updateQuantity(
       medicineId as string,
+      req?.user?.id as string,
       req.body.value,
     );
     return sendResponse(
@@ -85,6 +91,7 @@ const deleteCartItem = async (
 
     const result = await customerCartService.deleteCartItem(
       medicineId as string,
+      req.user?.id as string,
     );
     return sendResponse(res, 200, true, "Item deleted successfully", result);
   } catch (error) {
@@ -108,7 +115,10 @@ const deleteCartItemAll = async (
         count: 0,
       });
     }
-    const result = await customerCartService.deleteCartItemAll(medicineIds);
+    const result = await customerCartService.deleteCartItemAll(
+      medicineIds,
+      req.user?.id as string,
+    );
     return sendResponse(res, 200, true, "Items deleted successfully", result);
   } catch (error) {
     const errorMessage =

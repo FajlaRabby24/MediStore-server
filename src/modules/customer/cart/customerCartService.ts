@@ -2,14 +2,40 @@ import { Cart } from "../../../../generated/prisma/client";
 import { prisma } from "../../../lib/prisma";
 
 // get all cart of current user/customer
-const getAllCartOfCurrentUser = async (userId: string) => {
+const getAllCartOfCurrentUser = async (
+  userId: string,
+  limit: number,
+  skip: number,
+  page: number,
+  sortBy: string,
+  sortOrder: string,
+) => {
   const result = await prisma.cart.findMany({
+    take: limit,
+    skip,
+    where: {
+      user_id: userId,
+    },
+    orderBy: {
+      [sortBy]: sortOrder,
+    },
+  });
+
+  const totalCart = await prisma.cart.count({
     where: {
       user_id: userId,
     },
   });
 
-  return result;
+  return {
+    data: result,
+    pagination: {
+      total: totalCart,
+      page,
+      limit,
+      totalPage: Math.ceil(totalCart / limit),
+    },
+  };
 };
 
 // find medicine by id
@@ -50,7 +76,9 @@ const addToCart = async (
       seller_id: medicine.seller.id,
       price: medicine.price,
     },
-    select: {},
+    select: {
+      id: true,
+    },
   });
 
   return result;
@@ -81,6 +109,7 @@ const getCartItemById = async (id: string) => {
     },
     select: {
       id: true,
+      user_id: true,
       quantity: true,
     },
   });
@@ -90,7 +119,11 @@ const getCartItemById = async (id: string) => {
 
 // update cart item quantity
 // TODO: quantity must be positive check in client side
-const updateQuantity = async (medicineId: string, value: number) => {
+const updateQuantity = async (
+  medicineId: string,
+  userId: string,
+  value: number,
+) => {
   const cart = await getCartItemById(medicineId);
   if (!cart) {
     throw new Error("No cart item found of this id!");
@@ -103,6 +136,7 @@ const updateQuantity = async (medicineId: string, value: number) => {
   const result = await prisma.cart.update({
     where: {
       id: medicineId,
+      user_id: userId,
     },
     data: {
       quantity: {
@@ -119,20 +153,17 @@ const updateQuantity = async (medicineId: string, value: number) => {
 };
 
 // delete cart item => user/ customer
-const deleteCartItem = async (medicineId: string) => {
-  const medicine = await prisma.cart.findUnique({
-    where: {
-      id: medicineId,
-    },
-  });
+const deleteCartItem = async (medicineId: string, userId: string) => {
+  const cart = await getCartItemById(medicineId);
 
-  if (!medicine) {
+  if (!cart) {
     throw new Error("Medicine not found!");
   }
 
   const result = await prisma.cart.delete({
     where: {
       id: medicineId,
+      user_id: userId,
     },
     select: {
       id: true,
@@ -143,12 +174,13 @@ const deleteCartItem = async (medicineId: string) => {
 };
 
 // delete all items in cart by array of id => user/customer
-const deleteCartItemAll = async (medicineIds: string[]) => {
+const deleteCartItemAll = async (medicineIds: string[], userId: string) => {
   const result = await prisma.cart.deleteMany({
     where: {
       id: {
         in: medicineIds,
       },
+      user_id: userId,
     },
   });
 
