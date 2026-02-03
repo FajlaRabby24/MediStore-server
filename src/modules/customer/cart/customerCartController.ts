@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { sendResponse } from "../../utils/sendResponse";
-import { cartService } from "./customerService";
+import { sendResponse } from "../../../utils/sendResponse";
+import { customerCartService } from "./customerCartService";
 
 // get all cart of current user/customer
 const getAllCartOfCurrentUser = async (
@@ -14,7 +14,9 @@ const getAllCartOfCurrentUser = async (
       return sendResponse(res, 401, false, "Unauthorized user!");
     }
 
-    const result = await cartService.getAllCartOfCurrentUser(user.id as string);
+    const result = await customerCartService.getAllCartOfCurrentUser(
+      user.id as string,
+    );
     return sendResponse(res, 200, true, "Cart retrived successfully.", result);
   } catch (error) {
     const errorMessage =
@@ -26,12 +28,10 @@ const getAllCartOfCurrentUser = async (
 // create new order => user/customer
 const addToCart = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const user = req.user;
-    if (!user) {
-      return sendResponse(res, 401, false, "Unauthorized user!");
-    }
-
-    const result = await cartService.addToCart(req.body, user.id as string);
+    const result = await customerCartService.addToCart(
+      req.body,
+      req?.user?.id as string,
+    );
     return sendResponse(res, 201, true, "Added to cart successfully", result);
   } catch (error) {
     const errorMessage =
@@ -53,7 +53,7 @@ const updateQuantity = async (
       return sendResponse(res, 401, false, "Medicine id is required!");
     }
 
-    const result = await cartService.updateQuantity(
+    const result = await customerCartService.updateQuantity(
       medicineId as string,
       req.body.value,
     );
@@ -83,7 +83,9 @@ const deleteCartItem = async (
       return sendResponse(res, 401, false, "Medicine id is required!");
     }
 
-    const result = await cartService.deleteCartItem(medicineId as string);
+    const result = await customerCartService.deleteCartItem(
+      medicineId as string,
+    );
     return sendResponse(res, 200, true, "Item deleted successfully", result);
   } catch (error) {
     const errorMessage =
@@ -106,7 +108,7 @@ const deleteCartItemAll = async (
         count: 0,
       });
     }
-    const result = await cartService.deleteCartItemAll(medicineIds);
+    const result = await customerCartService.deleteCartItemAll(medicineIds);
     return sendResponse(res, 200, true, "Items deleted successfully", result);
   } catch (error) {
     const errorMessage =
@@ -115,7 +117,7 @@ const deleteCartItemAll = async (
   }
 };
 
-export const cartController = {
+export const customerCartController = {
   addToCart,
   updateQuantity,
   deleteCartItem,

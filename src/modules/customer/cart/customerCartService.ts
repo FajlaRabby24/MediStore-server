@@ -1,5 +1,5 @@
-import { Cart } from "../../../generated/prisma/client";
-import { prisma } from "../../lib/prisma";
+import { Cart } from "../../../../generated/prisma/client";
+import { prisma } from "../../../lib/prisma";
 
 // get all cart of current user/customer
 const getAllCartOfCurrentUser = async (userId: string) => {
@@ -21,6 +21,12 @@ const getMedicineById = async (medicineId: string) => {
     select: {
       id: true,
       stock: true,
+      price: true,
+      seller: {
+        select: {
+          id: true,
+        },
+      },
     },
   });
 
@@ -41,7 +47,10 @@ const addToCart = async (
     data: {
       ...data,
       user_id: userId,
+      seller_id: medicine.seller.id,
+      price: medicine.price,
     },
+    select: {},
   });
 
   return result;
@@ -142,7 +151,7 @@ const deleteCartItemAll = async (medicineIds: string[]) => {
 //   // cart.map((cartItem: Cart) => (cartItem.))
 // };
 
-export const cartService = {
+export const customerCartService = {
   addToCart,
   updateQuantity,
   deleteCartItem,
