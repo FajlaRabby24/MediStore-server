@@ -73,13 +73,31 @@ const updateMedicineStock = async (medicineId: string, stock: number) => {
   });
 };
 
+// get cart item by id
+const getCartItemById = async (id: string) => {
+  const result = await prisma.cart.findUnique({
+    where: {
+      id,
+    },
+    select: {
+      id: true,
+      quantity: true,
+    },
+  });
+
+  return result;
+};
+
 // update cart item quantity
 // TODO: quantity must be positive check in client side
 const updateQuantity = async (medicineId: string, value: number) => {
-  const medicine = await getMedicineById(medicineId);
+  const cart = await getCartItemById(medicineId);
+  if (!cart) {
+    throw new Error("No cart item found of this id!");
+  }
 
-  if (!medicine) {
-    throw new Error("Medicine not found!");
+  if (cart.quantity + value < 1) {
+    throw new Error("Quantity must be positive.");
   }
 
   const result = await prisma.cart.update({

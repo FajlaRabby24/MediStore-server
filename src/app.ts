@@ -43,7 +43,7 @@ app.use("/api/seller", authMiddleware(UserRoles.SELLER), sellerRouter);
 app.use("/api/user", authMiddleware(UserRoles.USER), customerRouter);
 app.use("/api/admin", authMiddleware(UserRoles.ADMIN), adminRouter);
 
-app.use("/", (req: Request, res: Response) => {
+app.get("/", (req: Request, res: Response) => {
   res.status(200).json({
     success: true,
     message: "This is root route.",
