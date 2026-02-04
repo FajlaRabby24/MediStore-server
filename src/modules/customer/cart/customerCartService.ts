@@ -187,20 +187,6 @@ const deleteCartItemAll = async (medicineIds: string[], userId: string) => {
   return result;
 };
 
-// checkout
-// const checkOut = async (userId: string) => {
-//   // get cart of current user
-//   const cart = await getAllCartOfCurrentUser(userId);
-
-//   if (cart.length < 1) {
-//     throw new Error(
-//       "Your cart is empty. First Add some product on your cart. Thank you!",
-//     );
-//   }
-
-//   // cart.map((cartItem: Cart) => (cartItem.))
-// };
-
 export const customerCartService = {
   addToCart,
   updateQuantity,

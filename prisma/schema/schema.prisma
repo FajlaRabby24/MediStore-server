@@ -132,6 +132,7 @@ model Medicines {
     price       Decimal @db.Decimal(10, 2)
     stock       Int
     isActive    Boolean @default(true)
+    image       String?
 
     expiry_date DateTime?
 
@@ -209,10 +210,10 @@ model Payments {
     order_id String
     order    Orders @relation(fields: [order_id], references: [id])
 
-    method  PaymentMethods
-    amount  Decimal        @db.Decimal(10, 2)
-    status  PaymentStatus  @default(PENDING)
-    paid_at DateTime?
+    method         PaymentMethods
+    amount         Decimal        @db.Decimal(10, 2)
+    payment_status PaymentStatus  @default(PENDING)
+    paid_at        DateTime?
 
     @@index([order_id])
     @@map("payments")
@@ -229,7 +230,7 @@ model Cart {
     seller    Seller @relation(fields: [seller_id], references: [id])
 
     medicine_id String
-    product     Medicines @relation(fields: [medicine_id], references: [id])
+    medicines   Medicines @relation(fields: [medicine_id], references: [id])
 
     quantity   Int      @default(1)
     price      Decimal  @db.Decimal(10, 2)
