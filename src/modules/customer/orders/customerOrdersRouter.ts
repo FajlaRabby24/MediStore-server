@@ -5,4 +5,6 @@ const router = Router();
 
 router.get("/", customerOrderstController.getMyOrders);
 
+router.get("/:orderId", customerOrderstController.getOrderById);
+
 export const customerOrdersRouter = router;
