@@ -110,8 +110,10 @@ const checkout = async (
   const cartItems = await loadCartItems(userId);
 
   let paymentStatus = PaymentStatus.PENDING;
+  let paidAt: Date | null = null;
   if (payload.paymentMethod !== PaymentMethods.COD) {
     paymentStatus = PaymentStatus.PAID;
+    paidAt = new Date();
   }
 
   // prisma transaction
@@ -142,16 +144,26 @@ const checkout = async (
 
     await tx.cart.deleteMany({ where: { user_id: userId } });
 
-    await tx.payments.create({
+    const payment = await tx.payments.create({
       data: {
         order_id: order.id,
         amount: order.total_price,
         method: payload.paymentMethod,
         payment_status: paymentStatus,
+        paid_at: paidAt,
+      },
+      select: {
+        id: true,
+        order_id: true,
+        method: true,
+        amount: true,
       },
     });
 
-    return order;
+    return {
+      order,
+      payment,
+    };
   });
 
   return result;

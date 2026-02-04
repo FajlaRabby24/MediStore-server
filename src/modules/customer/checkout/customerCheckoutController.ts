@@ -29,7 +29,7 @@ const checkout = async (req: Request, res: Response, next: NextFunction) => {
       req.body,
     );
 
-    return sendResponse(res, 200, true, "Checkout successful", result);
+    return sendResponse(res, 201, true, "Checkout successful", result);
   } catch (error) {
     const errrorMessage =
       error instanceof Error ? error.message : "Something went wrong!";
