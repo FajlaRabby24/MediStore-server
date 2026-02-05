@@ -1,17 +1,20 @@
 import { NextFunction, Request, Response } from "express";
 import { sendResponse } from "../../../utils/sendResponse";
+import { sellerDashboardService } from "./sellerDashboardService";
 
 // make seller profile => seller
-const makeSellerProfile = async (
+const getCurrentSellerStats = async (
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
   try {
-    return sendResponse(res, 201, true, "Seller dashboard.");
+    const result = await sellerDashboardService.getCurrentSellerStats();
+
+    return sendResponse(res, 201, true, "Seller dashboard.", result);
   } catch (error) {
     next(error);
   }
 };
 
-export const sellerDashboardController = {};
+export const sellerDashboardController = { getCurrentSellerStats };

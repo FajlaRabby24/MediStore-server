@@ -1,12 +1,18 @@
 import { NextFunction, Request, Response } from "express";
+import { sendResponse } from "../../../utils/sendResponse";
+import { sellerOrderService } from "./sellerOrderService";
 
-// TODO: GET seller's order
 const getSellerOrders = async (
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
   try {
+    const result = await sellerOrderService.getSellerOrders(
+      req.user?.id as string,
+    );
+
+    return sendResponse(res, 200, true, "Stats retrived successfully", result);
   } catch (error) {
     next(error);
   }

@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { sellerOrderService } from "./sellerOrderService";
+import { sellerOrderController } from "./sellerOrderController";
 
 const router = Router();
 
-router.get("/", sellerOrderService.getSellerOrders);
-router.patch("/:orderId", sellerOrderService.updateOrderStatus);
+router.get("/", sellerOrderController.getSellerOrders);
+router.patch("/:orderId", sellerOrderController.updateOrderStatus);
 
 export const sellerOrderRouter = router;
