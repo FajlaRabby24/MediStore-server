@@ -1,5 +1,5 @@
-import { Seller } from "../../../generated/prisma/client";
-import { prisma } from "../../lib/prisma";
+import { Seller } from "../../../../generated/prisma/client";
+import { prisma } from "../../../lib/prisma";
 
 // make seller profile after login => seller
 const makeSellerProfile = async (
@@ -26,6 +26,6 @@ const makeSellerProfile = async (
   return result;
 };
 
-export const sellerGeneralService = {
+export const sellerProfileService = {
   makeSellerProfile,
 };

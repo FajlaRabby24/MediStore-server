@@ -1,12 +1,12 @@
 import { Router } from "express";
 import { sellerMedicineRouter } from "./medicine/sellerMedicineRouter";
 import { sellerOrderRouter } from "./order/sellerOrderRouter";
-import { sellerController } from "./sellerController";
+import { sellerProfileRouter } from "./profile/sellerProfileRouter";
 
 const router = Router();
 
 // make seller profile => seller
-router.post("/make-seller", sellerController.makeSellerProfile);
+router.use("/profile", sellerProfileRouter);
 
 router.use("/medicine", sellerMedicineRouter);
 

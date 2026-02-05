@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { sendResponse } from "../../utils/sendResponse";
-import { sellerGeneralService } from "./sellerService";
+import { sendResponse } from "../../../utils/sendResponse";
+import { sellerProfileService } from "./sellerProfileService";
 
 // make seller profile => seller
 const makeSellerProfile = async (
@@ -12,7 +12,7 @@ const makeSellerProfile = async (
     delete req.body?.is_verified;
     const isVerified = false;
 
-    const result = await sellerGeneralService.makeSellerProfile(
+    const result = await sellerProfileService.makeSellerProfile(
       req.body,
       isVerified,
       req.user?.id as string,
@@ -24,6 +24,6 @@ const makeSellerProfile = async (
   }
 };
 
-export const sellerController = {
+export const sellerProfileController = {
   makeSellerProfile,
 };
