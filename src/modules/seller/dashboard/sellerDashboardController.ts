@@ -9,9 +9,11 @@ const getCurrentSellerStats = async (
   next: NextFunction,
 ) => {
   try {
-    const result = await sellerDashboardService.getCurrentSellerStats();
+    const result = await sellerDashboardService.getCurrentSellerStats(
+      req.user?.id as string,
+    );
 
-    return sendResponse(res, 201, true, "Seller dashboard.", result);
+    return sendResponse(res, 200, true, "Seller dashboard.", result);
   } catch (error) {
     next(error);
   }

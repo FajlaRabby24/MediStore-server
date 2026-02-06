@@ -1,7 +1,7 @@
 import { prisma } from "../../../lib/prisma";
 
 // get seller by use id
-const getSellerByUserId = async (userId: string) => {
+export const getSellerByUserId = async (userId: string) => {
   const seller = await prisma.seller.findUnique({
     where: {
       user_id: userId,
