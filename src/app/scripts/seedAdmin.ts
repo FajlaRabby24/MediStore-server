@@ -1,4 +1,4 @@
-import { RolesName } from "../../../generated/prisma";
+import { RolesName } from "../../../generated/prisma/enums";
 import { config } from "../config";
 import { auth } from "../lib/auth";
 import { prisma } from "../lib/prisma";
