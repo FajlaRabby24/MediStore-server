@@ -16,7 +16,7 @@
     "qs": "^6.15.1",
     "tsup": "^8.5.1"
   },
-  "name": "server-2",
+  "name": "medi-store-server",
   "module": "index.ts",
   "type": "module",
   "private": true,
