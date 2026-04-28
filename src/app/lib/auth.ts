@@ -5,7 +5,7 @@ import { bearer, emailOTP } from "better-auth/plugins";
 import { config } from "../config";
 // import { UserRoles, UserStatus } from "../constant";
 // import { sendEmail } from "../utils/email";
-import { RolesName, UserStatus } from "@prisma/client";
+import { RolesName, UserStatus } from "../../../generated/prisma/enums";
 import { sendEmail } from "../utils/email";
 import { prisma } from "./prisma";
 
