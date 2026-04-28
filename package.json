@@ -36,7 +36,7 @@
     "typescript": "^6.0.3"
   },
   "scripts": {
-    "build": "prisma generate && tsup src/index.ts --format esm --platform node --target node20 --outDir api --external pg-native",
+    "build": "prisma generate && tsup src/app.ts --format esm --platform node --target node20 --outDir api --external pg-native",
     "postinstall": "prisma generate",
     "start": "bun dist/server.js",
     "postbuild": "tsup",
