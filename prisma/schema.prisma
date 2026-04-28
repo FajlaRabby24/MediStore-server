@@ -1,0 +1,297 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+
+// roles
+enum RolesName {
+  USER
+  SELLER
+  ADMIN
+}
+
+// users
+enum UserStatus {
+  ACTIVE
+  BLOCKED
+}
+
+model User {
+  id            String         @id
+  name          String
+  email         String
+  emailVerified Boolean        @default(false)
+  image         String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  role          RolesName      @default(USER)
+  phone         String?
+  status        UserStatus     @default(ACTIVE)
+  sessions      Session[]
+  accounts      Account[]
+  seller        Seller?
+  orders        Orders[]
+  carts         Cart[]
+  sellerRequest SellerRequest?
+  reviews       Reviews[]
+
+  @@unique([email])
+  @@map("user")
+}
+
+// ... existing models ...
+
+// ------------------ seller request
+enum RequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model SellerRequest {
+  id         String        @id @default(uuid())
+  user_id    String        @unique
+  user       User          @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  shop_name  String
+  license_no String
+  address    String
+  status     RequestStatus @default(PENDING)
+  created_at DateTime      @default(now())
+  updated_at DateTime      @updatedAt
+
+  @@map("seller-request")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
+
+// -------------------------- seller
+model Seller {
+  id String @id @default(ulid())
+
+  user_id String @unique
+  user    User   @relation(fields: [user_id], references: [id])
+
+  shop_name   String       @db.VarChar(100)
+  license_no  String       @unique @db.VarChar(50)
+  address     String       @db.Text
+  is_verified Boolean?     @default(false)
+  isActive    Boolean      @default(true)
+  created_at  DateTime     @default(now())
+  medicines   Medicines[]
+  carts       Cart[]
+  orderItems  OrderItems[]
+
+  @@index([user_id])
+  @@map("seller")
+}
+
+// ------------------- products
+model Medicines {
+  id String @id @default(uuid())
+
+  seller_id String
+  seller    Seller @relation(fields: [seller_id], references: [id])
+
+  category_id String
+  category    MedicineCategory @relation(fields: [category_id], references: [id])
+
+  name        String
+  description String  @db.Text
+  price       Decimal @db.Decimal(10, 2)
+  stock       Int
+  isActive    Boolean @default(true)
+  image       String?
+
+  expiry_date DateTime?
+
+  created_at DateTime     @default(now())
+  updated_at DateTime     @updatedAt
+  orderItems OrderItems[]
+  carts      Cart[]
+  reviews    Reviews[]
+
+  @@index([seller_id, category_id])
+  @@map("medicines")
+}
+
+// ... existing models ...
+
+// ------------------ reviews
+model Reviews {
+  id          String    @id @default(uuid())
+  user_id     String
+  user        User      @relation(fields: [user_id], references: [id])
+  medicine_id String
+  medicine    Medicines @relation(fields: [medicine_id], references: [id])
+  rating      Int
+  comment     String    @db.Text
+  created_at  DateTime  @default(now())
+
+  @@unique([user_id, medicine_id]) // One review per medicine per user
+  @@map("reviews")
+}
+
+// -------------- orders
+enum OrderStatus {
+  CANCELED
+  PENDING
+  SHIPPED
+  DELIVERED
+}
+
+model Orders {
+  id               String       @id @default(uuid())
+  user_id          String
+  user             User         @relation(fields: [user_id], references: [id])
+  total_price      Decimal      @db.Decimal(10, 2)
+  status           OrderStatus  @default(PENDING)
+  shipping_address String       @db.Text
+  created_at       DateTime     @default(now())
+  orderItems       OrderItems[]
+  payments         Payments[]
+
+  @@index([user_id])
+  @@map("orders")
+}
+
+// -------------- orders items
+model OrderItems {
+  id String @id @default(uuid())
+
+  order_id String
+  order    Orders @relation(fields: [order_id], references: [id])
+
+  seller_id String
+  seller    Seller @relation(fields: [seller_id], references: [id])
+
+  medicine_id String
+  medicine    Medicines @relation(fields: [medicine_id], references: [id])
+
+  quantity Int     @default(1)
+  price    Decimal @db.Decimal(10, 2)
+
+  @@index([order_id, medicine_id])
+  @@map("order-items")
+}
+
+// ------------- payments
+enum PaymentMethods {
+  COD
+  CARD
+  BKASH
+  NAGAD
+  OTHERS
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+}
+
+model Payments {
+  id String @id @default(uuid())
+
+  order_id String
+  order    Orders @relation(fields: [order_id], references: [id])
+
+  method         PaymentMethods
+  amount         Decimal        @db.Decimal(10, 2)
+  payment_status PaymentStatus  @default(PENDING)
+  paid_at        DateTime?
+
+  @@index([order_id])
+  @@map("payments")
+}
+
+// _------------------------ cart
+model Cart {
+  id String @id @default(uuid())
+
+  user_id String
+  user    User   @relation(fields: [user_id], references: [id])
+
+  seller_id String
+  seller    Seller @relation(fields: [seller_id], references: [id])
+
+  medicine_id String
+  medicines   Medicines @relation(fields: [medicine_id], references: [id])
+
+  quantity   Int      @default(1)
+  price      Decimal  @db.Decimal(10, 2)
+  created_at DateTime @default(now())
+
+  @@unique([user_id, medicine_id])
+  @@map("cart")
+}
+
+// ------------------ medicine category
+model MedicineCategory {
+  id         String      @id @default(uuid())
+  name       String
+  slug       String      @unique
+  icon       String?
+  isActive   Boolean     @default(true)
+  created_at DateTime    @default(now())
+  updated_at DateTime    @updatedAt
+  medicines  Medicines[]
+
+  @@index([name])
+  @@map("medicine-category")
+}

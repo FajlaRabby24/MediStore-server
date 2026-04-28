@@ -1,0 +1,60 @@
+{
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
+    "better-auth": "^1.6.9",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "ejs": "^5.0.2",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.4.1",
+    "helmet": "^8.1.0",
+    "http-status": "^2.1.0",
+    "nodemailer": "^8.0.7",
+    "pg": "^8.20.0",
+    "qs": "^6.15.1",
+    "tsup": "^8.5.1"
+  },
+  "name": "server-2",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/cors": "^2.8.19",
+    "@types/ejs": "^3.1.5",
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.6.0",
+    "@types/nodemailer": "^8.0.0",
+    "@types/pg": "^8.20.0",
+    "prisma": "^7.8.0",
+    "tsx": "^4.21.0"
+  },
+  "peerDependencies": {
+    "typescript": "^6.0.3"
+  },
+  "scripts": {
+    "build": "prisma generate && tsup src/index.ts --format esm --platform node --target node20 --outDir api --external pg-native",
+    "postinstall": "prisma generate",
+    "start": "bun dist/server.js",
+    "postbuild": "tsup",
+    "dev": "tsx watch src/server.ts",
+    "lint": "eslint ./src/**/*",
+    "lint:fix": "eslint . --ext .ts --fix",
+    "typecheck": "tsc --noEmit",
+    "migrate": "prisma migrate dev",
+    "migrate:deploy": "prisma migrate deploy",
+    "reset": "prisma migrate reset",
+    "generate": "prisma generate",
+    "studio": "prisma studio",
+    "push": "prisma db push",
+    "pull": "prisma db pull",
+    "format": "prisma format",
+    "seed:admin": "tsx ./src/app/scripts/seedAdmin.ts",
+    "stripe:webhook": "stripe listen --forward-to localhost:5000/api/v1/webhook",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "test:routes": "tsx ./src/app/scripts/testAllRoutes.ts"
+  }
+}
