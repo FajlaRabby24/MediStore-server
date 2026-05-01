@@ -82,7 +82,7 @@ const getSellerMedicines = catchAsync(async (req: Request, res: Response) => {
   const user = req.user as IRequestUser;
   const result = await SellerServices.getSellerMedicinesFromDB(
     user.id,
-    req.query as any,
+    req.query as IQueryParams,
   );
 
   sendResponse(

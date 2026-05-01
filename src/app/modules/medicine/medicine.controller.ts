@@ -3,6 +3,7 @@ import status from "http-status";
 import type { IQueryParams } from "../../interface/query.interface";
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
+import { AdminServices } from "../admin/admin.service";
 import { MedicineServices } from "./medicine.service";
 
 const addMedicine = catchAsync(async (req: Request, res: Response) => {
@@ -64,9 +65,18 @@ const removeMedicine = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllCategories = catchAsync(async (req: Request, res: Response) => {
-  const result = await MedicineServices.getAllCategoriesFromDB();
+  const result = await AdminServices.getAllCategoriesFromDB(
+    req.query as IQueryParams,
+  );
 
-  sendResponse(res, status.OK, true, "Categories fetched successfully", result);
+  sendResponse(
+    res,
+    status.OK,
+    true,
+    "Categories fetched successfully",
+    result.data,
+    result.meta,
+  );
 });
 
 const getMedicineReviews = catchAsync(async (req: Request, res: Response) => {
