@@ -197,7 +197,10 @@ const getSellerDashboardStatsFromDB = async (userId: string) => {
     orderCount,
     lowStockCount,
     totalRevenue: totalRevenueResult._sum.price || 0,
-    monthlyRevenue,
+    monthlyRevenue: (monthlyRevenue as any[]).map((item) => ({
+      ...item,
+      revenue: Number(item.revenue),
+    })),
     recentOrders: recentOrders.map((order: any) => ({
       ...order,
       sellerTotal: order.orderItems.reduce(

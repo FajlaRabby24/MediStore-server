@@ -384,7 +384,10 @@ const getCustomerDashboardStatsFromDB = async (userId: string) => {
     reviewCount,
     cartCount,
     totalSpent: totalSpentResult._sum.total_price || 0,
-    monthlySpending,
+    monthlySpending: (monthlySpending as any[]).map((item) => ({
+      ...item,
+      spending: Number(item.spending),
+    })),
     recentOrders,
   };
 };

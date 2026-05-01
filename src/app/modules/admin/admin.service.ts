@@ -347,7 +347,10 @@ const getDashboardStatsFromDB = async () => {
     orderCount,
     pendingSellerRequests,
     totalRevenue: totalRevenueResult._sum.total_price || 0,
-    monthlyRevenue,
+    monthlyRevenue: (monthlyRevenue as any[]).map((item) => ({
+      ...item,
+      revenue: Number(item.revenue),
+    })),
     recentOrders,
     totalSales: totalSalesResult._sum.quantity || 0,
   };
