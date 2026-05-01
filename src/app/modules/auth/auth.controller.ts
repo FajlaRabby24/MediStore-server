@@ -258,15 +258,15 @@ const googleLogin = catchAsync(async (req: Request, res: Response) => {
 const googleLoginSuccess = catchAsync(async (req: Request, res: Response) => {
   const redirectPath = decodeURIComponent(req.query?.redirect as string) || "/";
 
-  const sessionToken = req.cookies["better-auth.session_token"];
+  const sessionToken =
+    req.cookies["better-auth.session_token"] ||
+    req.cookies["__Secure-better-auth.session_token"];
   if (!sessionToken) {
     return res.redirect(`${config.FRONTEND_URL}/login?error=oauth_failed`);
   }
 
   const session = await auth.api.getSession({
-    headers: {
-      Cookie: `better-auth.session_token=${sessionToken}`,
-    },
+    headers: req.headers as any,
   });
 
   if (!session) {
@@ -287,14 +287,14 @@ const googleLoginSuccess = catchAsync(async (req: Request, res: Response) => {
     redirectPath.startsWith("/") && !redirectPath.startsWith("//");
   const finalRedirectPath = isValidRedirectPath ? redirectPath : "/";
 
-  // Append tokens to query params so frontend can "pick them up"
-  const redirectUrl = new URL(`${config.FRONTEND_URL}/login`);
-  redirectUrl.searchParams.set("accessToken", accessToken);
-  redirectUrl.searchParams.set("refreshToken", refreshToken);
-  redirectUrl.searchParams.set("sessionToken", sessionToken); // or just 'token'
-  redirectUrl.searchParams.set("redirectPath", finalRedirectPath);
+  // Redirect to frontend callback page with tokens for cross-domain session sync
+  const callbackUrl = new URL(`${config.FRONTEND_URL}/google-callback`);
+  callbackUrl.searchParams.set("accessToken", accessToken);
+  callbackUrl.searchParams.set("refreshToken", refreshToken);
+  callbackUrl.searchParams.set("sessionToken", sessionToken);
+  callbackUrl.searchParams.set("redirectPath", finalRedirectPath);
 
-  res.redirect(redirectUrl.toString());
+  res.redirect(callbackUrl.toString());
 });
 
 // handle oauth error
