@@ -246,7 +246,7 @@ const googleLogin = catchAsync(async (req: Request, res: Response) => {
   const redirectPath = (req.query?.redirect as string) || "/";
 
   const encodedRedirectPath = encodeURIComponent(redirectPath);
-  const callbackURL = `${config.BETTER_AUTH_URL}/api/v1/auth/google/success?redirect=${encodedRedirectPath}`;
+  const callbackURL = `${config.SERVER_URL}/api/v1/auth/google/success?redirect=${encodedRedirectPath}`;
 
   res.render("googleRedirect", {
     callbackURL,

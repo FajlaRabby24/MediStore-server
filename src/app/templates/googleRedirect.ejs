@@ -20,17 +20,20 @@
 
           console.log("Redirecting to Google via Better Auth...");
 
-          const response = await fetch(`${betterAuthUrl}/api/auth/sign-in/social`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
+          const response = await fetch(
+            `${betterAuthUrl}/api/auth/sign-in/social`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              credentials: "include",
+              body: JSON.stringify({
+                provider: "google",
+                callbackURL: callbackURL,
+              }),
             },
-            credentials: "include",
-            body: JSON.stringify({
-              provider: "google",
-              callbackURL: callbackURL,
-            }),
-          });
+          );
 
           const data = await response.json();
 

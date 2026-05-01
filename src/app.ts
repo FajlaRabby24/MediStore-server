@@ -50,7 +50,7 @@ app.use(
 app.use(
   cors({
     credentials: true,
-    origin: [config.FRONTEND_URL, config.BETTER_AUTH_URL],
+    origin: [config.FRONTEND_URL, config.BETTER_AUTH_URL, config.SERVER_URL],
     methods: ["GET", "POST", "DELETE", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],
   }),

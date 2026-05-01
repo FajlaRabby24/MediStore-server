@@ -10,12 +10,12 @@ import { sendEmail } from "../utils/email";
 import { prisma } from "./prisma";
 
 export const auth = betterAuth({
-  baseURL: config.FRONTEND_URL,
+  baseURL: config.BETTER_AUTH_URL,
   secret: config.BETTER_AUTH_SECRET,
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
-  trustedOrigins: [config.FRONTEND_URL],
+  trustedOrigins: [config.FRONTEND_URL, config.BETTER_AUTH_URL, config.SERVER_URL],
   advanced: {
     useSecureCookies: config.NODE_ENV === "production",
     cookies: {
