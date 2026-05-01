@@ -18,12 +18,6 @@ import type {
   IRegisterPayload,
   IUpdatePayload,
 } from "./auth.types";
-// import {
-//   IChangePasswordPayload,
-//   ILoginPayload,
-//   IRegisterPayload,
-//   IUpdatePayload,
-// } from "./auth.types";
 
 const register = async (payload: IRegisterPayload) => {
   const { name, email, password, phone, image } = payload;
@@ -39,6 +33,17 @@ const register = async (payload: IRegisterPayload) => {
 
   if (!data.user) {
     throw new AppError(400, "User not found");
+  }
+
+  if (!data.user.emailVerified) {
+    await prisma.user.update({
+      where: {
+        email: data.user.email,
+      },
+      data: {
+        emailVerified: true,
+      },
+    });
   }
   try {
     return {

@@ -1,12 +1,5 @@
 import type { Request, Response } from "express";
 import status from "http-status";
-// import { config } from "../../app/config";
-// import AppError from "../../app/errorHandlers/AppError";
-// import { IRequestUser } from "../../app/interface/request.user";
-// import { auth } from "../../app/lib/auth";
-// import { catchAsync } from "../../app/utils/catchAsync";
-// import { sendResponse } from "../../app/utils/sendResponse";
-// import { tokenUtils } from "../../app/utils/token";
 import { config } from "../../config";
 import AppError from "../../errorHandlers/AppError";
 import type { IRequestUser } from "../../interface/request.user";
@@ -142,13 +135,17 @@ const profileUpdate = catchAsync(async (req: Request, res: Response) => {
   tokenUtils.setAccessTokenCookie(res, accessToken);
   tokenUtils.setRefreshTokenCookie(res, refreshToken);
 
-  sendResponse(
-    res,
-    status.OK,
-    true,
-    "Profile updated successfully",
-    result.user,
-  );
+  sendResponse(res, status.OK, true, "Profile updated successfully", {
+    accessToken,
+    refreshToken,
+    user: {
+      id: result.user.id,
+      name: result.user.name,
+      email: result.user.email,
+      image: result.user.image,
+      phone: result.user.phone,
+    },
+  });
 });
 
 const changePassword = catchAsync(async (req: Request, res: Response) => {
