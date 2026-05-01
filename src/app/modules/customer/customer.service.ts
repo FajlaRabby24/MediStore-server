@@ -344,7 +344,6 @@ const getCustomerDashboardStatsFromDB = async (userId: string) => {
     reviewCount,
     cartCount,
     totalSpentResult,
-    monthlySpending,
     recentOrders,
   ] = await Promise.all([
     prisma.orders.count({ where: { user_id: userId } }),
@@ -356,17 +355,6 @@ const getCustomerDashboardStatsFromDB = async (userId: string) => {
         total_price: true,
       },
     }),
-    // Monthly spending for this customer
-    prisma.$queryRawUnsafe(`
-      SELECT 
-        TO_CHAR(created_at, 'Mon') as month,
-        SUM(total_price) as spending
-      FROM orders
-      WHERE user_id = '${userId}'
-      AND created_at > NOW() - INTERVAL '6 months'
-      GROUP BY month, DATE_TRUNC('month', created_at)
-      ORDER BY DATE_TRUNC('month', created_at) ASC
-    `),
     prisma.orders.findMany({
       where: { user_id: userId },
       take: 5,
@@ -379,15 +367,58 @@ const getCustomerDashboardStatsFromDB = async (userId: string) => {
     }),
   ]);
 
+  // 360: Monthly spending for this customer
+  const monthlySpendingRaw = (await prisma.$queryRawUnsafe(`
+      SELECT 
+        TO_CHAR(created_at, 'Mon') as month,
+        SUM(total_price) as spending,
+        DATE_TRUNC('month', created_at) as month_date
+      FROM orders
+      WHERE user_id = '${userId}'
+      AND created_at > NOW() - INTERVAL '6 months'
+      GROUP BY month, month_date
+      ORDER BY month_date ASC
+    `)) as any[];
+
+  // Generate last 6 months with 0 spending
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const last6Months = Array.from({ length: 6 }).map((_, i) => {
+    const date = new Date();
+    date.setMonth(date.getMonth() - (5 - i));
+    return {
+      month: months[date.getMonth()],
+      spending: 0,
+    };
+  });
+
+  // Merge DB results with the 6-month timeline
+  const monthlySpending = last6Months.map((m) => {
+    const dbMonth = monthlySpendingRaw.find((dbm) => dbm.month === m.month);
+    return {
+      month: m.month,
+      spending: dbMonth ? Number(dbMonth.spending) : 0,
+    };
+  });
+
   return {
     orderCount,
     reviewCount,
     cartCount,
     totalSpent: totalSpentResult._sum.total_price || 0,
-    monthlySpending: (monthlySpending as any[]).map((item) => ({
-      ...item,
-      spending: Number(item.spending),
-    })),
+    monthlySpending,
     recentOrders,
   };
 };

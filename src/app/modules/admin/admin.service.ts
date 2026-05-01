@@ -302,7 +302,6 @@ const getDashboardStatsFromDB = async () => {
     orderCount,
     pendingSellerRequests,
     totalRevenueResult,
-    monthlyRevenue,
     recentOrders,
     totalSalesResult,
   ] = await Promise.all([
@@ -317,16 +316,6 @@ const getDashboardStatsFromDB = async () => {
         total_price: true,
       },
     }),
-    // Monthly revenue for the last 6 months
-    prisma.$queryRawUnsafe(`
-      SELECT 
-        TO_CHAR(created_at, 'Mon') as month,
-        SUM(total_price) as revenue
-      FROM orders
-      WHERE created_at > NOW() - INTERVAL '6 months'
-      GROUP BY month, DATE_TRUNC('month', created_at)
-      ORDER BY DATE_TRUNC('month', created_at) ASC
-    `),
     prisma.orders.findMany({
       take: 5,
       orderBy: { created_at: "desc" },
@@ -339,6 +328,38 @@ const getDashboardStatsFromDB = async () => {
     }),
   ]);
 
+  // 320: Monthly revenue for the last 6 months
+  const monthlyRevenueRaw = (await prisma.$queryRawUnsafe(`
+      SELECT 
+        TO_CHAR(created_at, 'Mon') as month,
+        SUM(total_price) as revenue,
+        DATE_TRUNC('month', created_at) as month_date
+      FROM orders
+      WHERE created_at > NOW() - INTERVAL '6 months'
+      GROUP BY month, month_date
+      ORDER BY month_date ASC
+    `)) as any[];
+
+  // Generate last 6 months with 0 revenue
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const last6Months = Array.from({ length: 6 }).map((_, i) => {
+    const date = new Date();
+    date.setMonth(date.getMonth() - (5 - i));
+    return {
+      month: months[date.getMonth()],
+      revenue: 0,
+    };
+  });
+
+  // Merge DB results with the 6-month timeline
+  const monthlyRevenue = last6Months.map((m) => {
+    const dbMonth = monthlyRevenueRaw.find((dbm) => dbm.month === m.month);
+    return {
+      month: m.month,
+      revenue: dbMonth ? Number(dbMonth.revenue) : 0,
+    };
+  });
+
   return {
     userCount,
     sellerCount,
@@ -347,10 +368,7 @@ const getDashboardStatsFromDB = async () => {
     orderCount,
     pendingSellerRequests,
     totalRevenue: totalRevenueResult._sum.total_price || 0,
-    monthlyRevenue: (monthlyRevenue as any[]).map((item) => ({
-      ...item,
-      revenue: Number(item.revenue),
-    })),
+    monthlyRevenue,
     recentOrders,
     totalSales: totalSalesResult._sum.quantity || 0,
   };

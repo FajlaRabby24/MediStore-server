@@ -140,7 +140,6 @@ const getSellerDashboardStatsFromDB = async (userId: string) => {
     orderCount,
     lowStockCount,
     totalRevenueResult,
-    monthlyRevenue,
     recentOrders,
   ] = await Promise.all([
     prisma.medicines.count({ where: { seller_id: seller.id } }),
@@ -163,18 +162,6 @@ const getSellerDashboardStatsFromDB = async (userId: string) => {
         price: true,
       },
     }),
-    // Monthly revenue for this seller
-    prisma.$queryRawUnsafe(`
-      SELECT 
-        TO_CHAR(o.created_at, 'Mon') as month,
-        SUM(oi.price * oi.quantity) as revenue
-      FROM "order-items" oi
-      JOIN orders o ON oi.order_id = o.id
-      WHERE oi.seller_id = '${seller.id}'
-      AND o.created_at > NOW() - INTERVAL '6 months'
-      GROUP BY month, DATE_TRUNC('month', o.created_at)
-      ORDER BY DATE_TRUNC('month', o.created_at) ASC
-    `),
     prisma.orders.findMany({
       where: {
         orderItems: {
@@ -192,15 +179,59 @@ const getSellerDashboardStatsFromDB = async (userId: string) => {
     }),
   ]);
 
+  // Monthly revenue for this seller
+  const monthlyRevenueRaw = (await prisma.$queryRawUnsafe(`
+      SELECT 
+        TO_CHAR(o.created_at, 'Mon') as month,
+        SUM(oi.price * oi.quantity) as revenue,
+        DATE_TRUNC('month', o.created_at) as month_date
+      FROM "order-items" oi
+      JOIN orders o ON oi.order_id = o.id
+      WHERE oi.seller_id = '${seller.id}'
+      AND o.created_at > NOW() - INTERVAL '6 months'
+      GROUP BY month, month_date
+      ORDER BY month_date ASC
+    `)) as any[];
+
+  // Generate last 6 months with 0 revenue
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const last6Months = Array.from({ length: 6 }).map((_, i) => {
+    const date = new Date();
+    date.setMonth(date.getMonth() - (5 - i));
+    return {
+      month: months[date.getMonth()],
+      revenue: 0,
+    };
+  });
+
+  // Merge DB results with the 6-month timeline
+  const monthlyRevenue = last6Months.map((m) => {
+    const dbMonth = monthlyRevenueRaw.find((dbm) => dbm.month === m.month);
+    return {
+      month: m.month,
+      revenue: dbMonth ? Number(dbMonth.revenue) : 0,
+    };
+  });
+
   return {
     medicineCount,
     orderCount,
     lowStockCount,
     totalRevenue: totalRevenueResult._sum.price || 0,
-    monthlyRevenue: (monthlyRevenue as any[]).map((item) => ({
-      ...item,
-      revenue: Number(item.revenue),
-    })),
+    monthlyRevenue,
     recentOrders: recentOrders.map((order: any) => ({
       ...order,
       sellerTotal: order.orderItems.reduce(

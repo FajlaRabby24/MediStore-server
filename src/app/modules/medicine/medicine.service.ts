@@ -43,9 +43,15 @@ const addMedicineInDB = async (userId: string, payload: TMedicine) => {
 };
 
 const getAllMedicinesFromDB = async (query: IQueryParams) => {
+  // Map 'category' to 'category.slug' for cleaner URLs and filtering
+  if (query.category) {
+    query["category.slug"] = query.category;
+    delete query.category;
+  }
+
   const medicineQuery = new QueryBuilder(prisma.medicines, query, {
-    searchableFields: ["name", "description"],
-    filterableFields: ["price"],
+    searchableFields: ["name", "description", "category.name", "category.slug"],
+    filterableFields: ["price", "category.slug"],
     defaultSortBy: "created_at",
   })
     .where({ isActive: true }) // Publicly only show active medicines

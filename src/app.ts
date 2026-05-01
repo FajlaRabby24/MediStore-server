@@ -13,17 +13,12 @@ import { config } from "./app/config";
 import { auth } from "./app/lib/auth";
 import { globalErrorHandler } from "./app/middleware/errorHandler";
 import { notFound } from "./app/middleware/notFound";
-import {
-  authLimiter,
-  globalLimiter,
-  readLimiter,
-  writeLimiter,
-} from "./app/middleware/rateLimit";
+import { globalLimiter } from "./app/middleware/rateLimit";
 import { indexRoute } from "./app/routes";
 
 const app: Application = express();
 
-app.set("trust proxy", true);
+app.set("trust proxy", 1);
 
 app.set("query parser", (str: string) => qs.parse(str));
 app.set("view engine", "ejs");
@@ -67,17 +62,17 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // 4. Strict auth limiter
-app.use("/api/auth", authLimiter);
-app.use("/api/v1/auth", authLimiter);
+// app.use("/api/auth", authLimiter);
+// app.use("/api/v1/auth", authLimiter);
 
 // 5. Better Auth handler
 app.use("/api/auth", toNodeHandler(auth));
 
 // 6. API routes with targeted limiters
 // Public read endpoints (medicines, categories)
-app.use("/api/v1/medicine", readLimiter);
+// app.use("/api/v1/medicine", readLimiter);
 // Write/mutation endpoints (orders, cart, reviews)
-app.use("/api/v1/user", writeLimiter);
+// app.use("/api/v1/user", writeLimiter);
 // All other API routes use global limiter (already applied above)
 app.use("/api/v1", indexRoute);
 
